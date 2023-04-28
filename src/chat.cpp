@@ -35,14 +35,14 @@ void display_loading() {
     while (!stop_display) {
 
 
-        for (int i=0; i < 12; i++){
+        for (int i=0; i < 14; i++){
                 fprintf(stdout, ".");
                 fflush(stdout);
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 if (stop_display){ break; }
         }
         
-            std::cout << "\r" << "             " << "\r" << std::flush;
+            std::cout << "\r" << "               " << "\r" << std::flush;
     }
     std::cout << "\r" << " " << std::flush;
 
@@ -188,7 +188,7 @@ int main(int argc, char* argv[]) {
 
     set_console_color(con_st, PROMPT);
     set_console_color(con_st, BOLD);
-    std::cout << "llmodel-chat";
+    std::cout << "LlamaGPTJ-chat";
     set_console_color(con_st, DEFAULT);
     set_console_color(con_st, PROMPT);
     std::cout << " (v. " << VERSION << ")";
@@ -198,13 +198,7 @@ int main(int argc, char* argv[]) {
     parse_params(argc, argv, params, prompt, interactive, continuous, memory);
 
 
-    llmodel_model model;
-    bool use_animation = true;
-    if (containsSubstring(params.model.c_str(), "gpt4all-j")) {
-         model = llmodel_gptj_create();
-    } else {
-         model = llmodel_llama_create();
-    }
+
 
     auto future = std::async(std::launch::async, display_loading);
 
@@ -216,7 +210,16 @@ int main(int argc, char* argv[]) {
         std::freopen("/dev/null", "w", stderr);
     #endif
 
-    std::cout << "\r" << "llmodel-chat: loading " << params.model.c_str()  << std::endl;
+    
+    llmodel_model model;
+    bool use_animation = true;
+    if (containsSubstring(params.model.c_str(), "gpt4all-j")) {
+         model = llmodel_gptj_create();
+    } else {
+         model = llmodel_llama_create();
+    }
+
+    std::cout << "\r" << "LlamaGPTJ-chat: loading " << params.model.c_str()  << std::endl;
     
     auto check_model = llmodel_loadModel(model, params.model.c_str());
     
@@ -241,7 +244,7 @@ int main(int argc, char* argv[]) {
         stop_display = true;
         future.wait();
         stop_display= false;
-        std::cout << "\r" << "llmodel-chat: done loading!" << std::flush;   
+        std::cout << "\r" << "LlamaGPTJ-chat: done loading!" << std::flush;   
     }
 
     set_console_color(con_st, PROMPT);
@@ -300,13 +303,10 @@ int main(int argc, char* argv[]) {
     ////////////            PROMPT LAMBDA FUNCTIONS               ////////////
     //////////////////////////////////////////////////////////////////////////
 
-  	//create PromptContext and update fields from params struct.
-    //LLModel::PromptContext  prompt_context;
 
     update_struct(prompt_context, params);
     
     
-    //model.setThreadCount(params.n_threads);
     llmodel_setThreadCount(model, params.n_threads);
     llmodel_setMlock(model, true);
 

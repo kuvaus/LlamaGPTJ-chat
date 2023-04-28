@@ -5,7 +5,7 @@ if(APPLE)
   set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
 endif()
 
-project(llmodel-chat)
+project(LlamaGPTJ-chat)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
