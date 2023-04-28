@@ -79,7 +79,6 @@ if(APPLE)
 elseif(WIN32 OR UNIX)
   set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif()
-  set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
 # Generate a header file with the version number
 configure_file(
