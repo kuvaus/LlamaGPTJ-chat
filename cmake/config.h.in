@@ -1,0 +1,6 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define VERSION "@VERSION_MAJOR@" "." "@VERSION_MINOR@" "." "@VERSION_PATCH@"
+
+#endif // CONFIG_H

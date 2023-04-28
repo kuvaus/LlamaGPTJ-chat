@@ -1,3 +1,13 @@
+# Folders
+build/
+tmp/
+
+# Visual Studio Code
+.vscode
+
+# MacOS 
+.DS_Store
+
 # Prerequisites
 *.d
 
@@ -30,3 +40,4 @@
 *.exe
 *.out
 *.app
+
