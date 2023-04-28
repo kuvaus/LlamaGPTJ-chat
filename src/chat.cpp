@@ -200,8 +200,8 @@ int main(int argc, char* argv[]) {
 
 
     //LLamaModel model;
-    llmodel_model model = llmodel_llama_create();
-    //llmodel_model model = llmodel_gptj_create();
+    //llmodel_model model = llmodel_llama_create();
+    llmodel_model model = llmodel_gptj_create();
 
     auto future = std::async(std::launch::async, display_loading);
 
@@ -216,6 +216,8 @@ int main(int argc, char* argv[]) {
     std::cout << "\r" << "llmodel-chat: loading " << params.model.c_str()  << std::endl;
     //auto check_llama = model.loadModel( params.model.c_str() );
     auto check_model = llmodel_loadModel(model, params.model.c_str());
+    //auto check_model = llmodel_loadModel(model, params.model.c_str());
+    
 
     //printf("Model type: %s\n", llmodel_getModelType(model));
     std::cout << "Model type:" << llmodel_getModelType(model) << std::endl;

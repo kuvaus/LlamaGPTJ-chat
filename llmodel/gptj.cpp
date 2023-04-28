@@ -647,8 +647,10 @@ GPTJ::GPTJ()
 
 bool GPTJ::loadModel(const std::string &modelPath)
 {
-    std::cerr << "GPTJ ERROR: loading gpt model from file unsupported!\n";
-    return false;
+    std::ifstream fin(modelPath, std::ios::in);
+    bool check_if_loaded = loadModel(modelPath, fin);
+    //std::cerr << "GPTJ ERROR: loading gpt model from file unsupported!\n";
+    return check_if_loaded;
 }
 
 bool GPTJ::loadModel(const std::string &modelPath, std::istream &fin) {
