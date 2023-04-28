@@ -73,11 +73,13 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
 endif ()
 
-# Include libs for Windows:
+# Include static libs for compatibility:
 if(APPLE)
   set(CMAKE_EXE_LINKER_FLAGS "-Wl,-search_paths_first -lSystem")
-elseif(WIN32 OR UNIX)
+elseif(UNIX)
   set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+elseif(WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -lwinpthread")
 endif()
 
 # Generate a header file with the version number
