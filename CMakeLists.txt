@@ -74,8 +74,15 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif ()
 
 # Include libs for Windows:
-set(BUILD_SHARED_LIBS OFF)
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+if(WIN32)
+  set(MY_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+elseif(UNIX)
+  set(MY_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+else()
+  set(MY_LINKER_FLAGS "")
+endif()
+
+set(CMAKE_EXE_LINKER_FLAGS "\${CMAKE_EXE_LINKER_FLAGS} \${MY_LINKER_FLAGS}")
 
 # Generate a header file with the version number
 configure_file(
