@@ -78,6 +78,9 @@ std::string llmodel_getModelType(llmodel_model model)
     }
 }
 
+bool containsSubstring(const std::string &str, const std::string &substr) {
+    return str.find(substr) != std::string::npos;
+}
 
 void update_struct(llmodel_prompt_context  &prompt_context, LLMParams &params){
     // TODO: handle this better
@@ -195,13 +198,13 @@ int main(int argc, char* argv[]) {
     parse_params(argc, argv, params, prompt, interactive, continuous, memory);
 
 
-
+    llmodel_model model;
     bool use_animation = true;
-
-
-    //LLamaModel model;
-    //llmodel_model model = llmodel_llama_create();
-    llmodel_model model = llmodel_gptj_create();
+    if (containsSubstring(params.model.c_str(), "gpt4all-j")) {
+         model = llmodel_gptj_create();
+    } else {
+         model = llmodel_llama_create();
+    }
 
     auto future = std::async(std::launch::async, display_loading);
 
@@ -214,12 +217,10 @@ int main(int argc, char* argv[]) {
     #endif
 
     std::cout << "\r" << "llmodel-chat: loading " << params.model.c_str()  << std::endl;
-    //auto check_llama = model.loadModel( params.model.c_str() );
+    
     auto check_model = llmodel_loadModel(model, params.model.c_str());
-    //auto check_model = llmodel_loadModel(model, params.model.c_str());
     
 
-    //printf("Model type: %s\n", llmodel_getModelType(model));
     std::cout << "Model type:" << llmodel_getModelType(model) << std::endl;
 
 
