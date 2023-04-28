@@ -33,7 +33,7 @@
 #include "config.h"
 
 
-struct GPTJParams {
+struct LLMParams {
     int32_t seed = -1;
     int32_t n_threads = std::min(4, (int32_t)std::thread::hardware_concurrency());
     int32_t n_predict = 200;
@@ -68,8 +68,8 @@ std::map<std::string, std::string> parse_json_string(const std::string& jsonStri
 std::string removeQuotes(const std::string& input);
 
 //parse_json.h functions
-void get_params_from_json(GPTJParams & params, std::string& filename);
-void print_usage(int argc, char** argv, const GPTJParams& params, std::string& prompt, int& memory);
-bool parse_params(int argc, char** argv, GPTJParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory);
+void get_params_from_json(LLMParams & params, std::string& filename);
+void print_usage(int argc, char** argv, const LLMParams& params, std::string& prompt, int& memory);
+bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory);
 
 #endif

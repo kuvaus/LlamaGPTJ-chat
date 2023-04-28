@@ -42,7 +42,7 @@ std::string random_prompt(int32_t seed) {
 }
 
 
-void print_usage(int argc, char** argv, const GPTJParams& params, std::string& prompt, int& memory) {
+void print_usage(int argc, char** argv, const LLMParams& params, std::string& prompt, int& memory) {
     // Print usage information
     fprintf(stderr, "usage: %s [options]\n", argv[0]);
     fprintf(stderr, "\n");
@@ -72,7 +72,7 @@ void print_usage(int argc, char** argv, const GPTJParams& params, std::string& p
     fprintf(stderr, "                        model path (current: %s)\n", params.model.c_str());
     fprintf(stderr, "\n");
 }
-bool parse_params(int argc, char** argv, GPTJParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory) {
+bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory) {
     std::string json_filename = "";
 
     // Parse command-line arguments

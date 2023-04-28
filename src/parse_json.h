@@ -36,7 +36,7 @@ std::string removeQuotes(const std::string& input) {
     return result;
 }
 
-void get_params_from_json(GPTJParams & params, std::string& filename) {
+void get_params_from_json(LLMParams & params, std::string& filename) {
     std::map<std::string, std::string> parsed = parse_json_string(readFile(filename));
 
     if (parsed.find("top_p") != parsed.end())

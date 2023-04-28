@@ -59,7 +59,7 @@ void display_loading() {
 ////////////                 LLAMA FUNCTIONS                  ////////////
 //////////////////////////////////////////////////////////////////////////
 
-void update_struct(llmodel_prompt_context  &prompt_context, GPTJParams &params){
+void update_struct(llmodel_prompt_context  &prompt_context, LLMParams &params){
     // TODO: handle this better
     prompt_context.n_predict = params.n_predict;
     prompt_context.top_k = params.top_k;
@@ -107,7 +107,7 @@ std::string answer ="";
 
 
 
-std::string get_input(ConsoleState& con_st, llmodel_model llama_model, std::string& input) {
+std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& input) {
     set_console_color(con_st, USER_INPUT);
 
     std::cout << "\n> ";
@@ -115,8 +115,9 @@ std::string get_input(ConsoleState& con_st, llmodel_model llama_model, std::stri
     set_console_color(con_st, DEFAULT);
 
     if (input == "exit" || input == "quit") {
-        //free_model(llama_model);
-        llmodel_llama_destroy(llama_model);
+        //free_model(model);
+        //llmodel_llama_destroy(model);
+        //llmodel_gptj_destroy(model);
         exit(0);
     }
 
@@ -149,7 +150,7 @@ int main(int argc, char* argv[]) {
     response.reserve(10000);
     answer.reserve(10000);
     int memory = 200;
-    GPTJParams params;
+    LLMParams params;
     std::string prompt = "";
     std::string input = "";
     //std::string answer = "";
@@ -171,8 +172,8 @@ int main(int argc, char* argv[]) {
     bool use_animation = true;
 
 
-    //LLamaModel llama_model;
-    llmodel_model llama_model = llmodel_llama_create();
+    //LLamaModel model;
+    llmodel_model model = llmodel_llama_create();
 
     auto future = std::async(std::launch::async, display_loading);
 
@@ -185,8 +186,8 @@ int main(int argc, char* argv[]) {
     #endif
 
     std::cout << "\r" << "llmodel-chat: loading " << params.model.c_str()  << std::endl;
-    //auto check_llama = llama_model.loadModel( params.model.c_str() );
-    auto check_llama = llmodel_loadModel(llama_model, params.model.c_str());
+    //auto check_llama = model.loadModel( params.model.c_str() );
+    auto check_llama = llmodel_loadModel(model, params.model.c_str());
 
     //bring back stderr for now
     dup2(stderr_copy, fileno(stderr));
@@ -270,20 +271,20 @@ int main(int argc, char* argv[]) {
     update_struct(prompt_context, params);
     
     
-    //llama_model.setThreadCount(params.n_threads);
-    llmodel_setThreadCount(llama_model, params.n_threads);
-    llmodel_setMlock(llama_model, false);
+    //model.setThreadCount(params.n_threads);
+    llmodel_setThreadCount(model, params.n_threads);
+    llmodel_setMlock(model, false);
 
     if (interactive) {
-        input = get_input(con_st, llama_model, input);
+        input = get_input(con_st, model, input);
         if (prompt != "") {
             if (use_animation){ future = std::async(std::launch::async, display_frames); }
-            llmodel_prompt(llama_model, (default_prefix + default_header + prompt + " " + input + default_footer).c_str(),
+            llmodel_prompt(model, (default_prefix + default_header + prompt + " " + input + default_footer).c_str(),
             lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
             if (use_animation){ stop_display = true; future.wait(); stop_display = false; }
         } else {
             if (use_animation){ future = std::async(std::launch::async, display_frames); }
-            llmodel_prompt(llama_model, (default_prefix + default_header + input + default_footer).c_str(),
+            llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(),
             lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
             if (use_animation){ stop_display = true; future.wait(); stop_display = false; }
 
@@ -296,9 +297,9 @@ int main(int argc, char* argv[]) {
                 memory_string = default_prefix + default_header + input.substr(0, memory) + default_footer + answer.substr(0, memory);
             }
             answer = ""; //New prompt. We stored previous answer in memory so clear it.
-            input = get_input(con_st, llama_model, input);
+            input = get_input(con_st, model, input);
             if (use_animation){ future = std::async(std::launch::async, display_frames); }
-            llmodel_prompt(llama_model, (memory_string + default_header + input + default_footer).c_str(), 
+            llmodel_prompt(model, (memory_string + default_header + input + default_footer).c_str(), 
             lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
             if (use_animation){ stop_display = true; future.wait(); stop_display = false; }
 
@@ -306,7 +307,7 @@ int main(int argc, char* argv[]) {
         }
     } else {
         if (use_animation){ future = std::async(std::launch::async, display_frames); }
-        llmodel_prompt(llama_model, (default_prefix + default_header + prompt + default_footer).c_str(), 
+        llmodel_prompt(model, (default_prefix + default_header + prompt + default_footer).c_str(), 
         lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
         if (use_animation){ stop_display = true; future.wait(); stop_display = false; }
 
@@ -316,7 +317,8 @@ int main(int argc, char* argv[]) {
 
 
     set_console_color(con_st, DEFAULT);
-    llmodel_llama_destroy(llama_model);
+    //llmodel_llama_destroy(model);
+    //llmodel_gptj_destroy(model);
 
     //printPromptContext(prompt_context);
     //llama_model.~LLamaModel();
