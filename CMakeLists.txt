@@ -73,6 +73,10 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
 endif ()
 
+# Include libs for Windows:
+set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+
 # Generate a header file with the version number
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.in"
