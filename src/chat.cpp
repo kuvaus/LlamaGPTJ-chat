@@ -240,7 +240,7 @@ int main(int argc, char* argv[]) {
         stop_display = true;
         future.wait();
         stop_display= false;
-        std::cout << "\r" << "llama-chat: done loading!" << std::flush;   
+        std::cout << "\r" << "llmodel-chat: done loading!" << std::flush;   
     }
 
     set_console_color(con_st, PROMPT);
