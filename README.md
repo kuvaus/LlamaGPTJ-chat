@@ -1,5 +1,5 @@
 [![CMake](https://github.com/kuvaus/llmodel-chat/actions/workflows/cmake.yml/badge.svg)](https://github.com/kuvaus/llmodel-chat/actions/workflows/cmake.yml)
-# Llama-Chat
+# Llmodel-Chat
 Simple command line chat program for [GPT-J](https://en.wikipedia.org/wiki/GPT-J) and [LLaMA](https://en.wikipedia.org/wiki/LLaMA) models written in C++. Based on [llama.cpp](https://github.com/ggerganov/llama.cpp) with some bindings from [llmodel-c](https://github.com/nomic-ai/gpt4all-chat).
 
 
