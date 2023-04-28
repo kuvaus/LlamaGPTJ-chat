@@ -2,9 +2,9 @@
 
 #include "../llmodel/llmodel.h"
 #include "../llmodel/llmodel_c.h"
+#include "../llmodel/llmodel_c.cpp"
 #include "../llmodel/llamamodel.h" 
 #include "../llmodel/gptj.h" 
-#include "../llmodel/gptj.cpp" 
 #include "./utils.h"
 #include "./parse_json.h"
 
@@ -35,14 +35,14 @@ void display_loading() {
     while (!stop_display) {
 
 
-        for (int i=0; i < 10; i++){
+        for (int i=0; i < 12; i++){
                 fprintf(stdout, ".");
                 fflush(stdout);
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 if (stop_display){ break; }
         }
         
-            std::cout << "\r" << "           " << "\r" << std::flush;
+            std::cout << "\r" << "             " << "\r" << std::flush;
     }
     std::cout << "\r" << " " << std::flush;
 
@@ -58,6 +58,26 @@ void display_loading() {
 //////////////////////////////////////////////////////////////////////////
 ////////////                 LLAMA FUNCTIONS                  ////////////
 //////////////////////////////////////////////////////////////////////////
+
+std::string llmodel_getModelType(llmodel_model model)
+{
+    LLModelWrapper *wrapper = reinterpret_cast<LLModelWrapper*>(model);
+    const std::type_info &modelTypeInfo = typeid(*wrapper->llModel);
+
+    if (modelTypeInfo == typeid(GPTJ))
+    {
+        return "GPTJ";
+    }
+    else if (modelTypeInfo == typeid(LLamaModel))
+    {
+        return "LLamaModel";
+    }
+    else
+    {
+        return "Unknown";
+    }
+}
+
 
 void update_struct(llmodel_prompt_context  &prompt_context, LLMParams &params){
     // TODO: handle this better
@@ -115,9 +135,16 @@ std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& in
     set_console_color(con_st, DEFAULT);
 
     if (input == "exit" || input == "quit") {
-        //free_model(model);
-        //llmodel_llama_destroy(model);
-        //llmodel_gptj_destroy(model);
+        
+            
+        std::string check_model_type = llmodel_getModelType(model);
+        if (check_model_type == "LLamaModel") {
+            llmodel_llama_destroy(model);
+        }
+        if (check_model_type == "GPTJ") {
+            llmodel_gptj_destroy(model);
+        }
+        
         exit(0);
     }
 
@@ -174,6 +201,7 @@ int main(int argc, char* argv[]) {
 
     //LLamaModel model;
     llmodel_model model = llmodel_llama_create();
+    //llmodel_model model = llmodel_gptj_create();
 
     auto future = std::async(std::launch::async, display_loading);
 
@@ -187,13 +215,17 @@ int main(int argc, char* argv[]) {
 
     std::cout << "\r" << "llmodel-chat: loading " << params.model.c_str()  << std::endl;
     //auto check_llama = model.loadModel( params.model.c_str() );
-    auto check_llama = llmodel_loadModel(model, params.model.c_str());
+    auto check_model = llmodel_loadModel(model, params.model.c_str());
+
+    //printf("Model type: %s\n", llmodel_getModelType(model));
+    std::cout << "Model type:" << llmodel_getModelType(model) << std::endl;
+
 
     //bring back stderr for now
     dup2(stderr_copy, fileno(stderr));
     close(stderr_copy);
 
-    if (check_llama == false) {
+    if (check_model == false) {
         stop_display = true;
         future.wait();
         stop_display= false;   
@@ -273,7 +305,7 @@ int main(int argc, char* argv[]) {
     
     //model.setThreadCount(params.n_threads);
     llmodel_setThreadCount(model, params.n_threads);
-    llmodel_setMlock(model, false);
+    llmodel_setMlock(model, true);
 
     if (interactive) {
         input = get_input(con_st, model, input);
@@ -317,12 +349,14 @@ int main(int argc, char* argv[]) {
 
 
     set_console_color(con_st, DEFAULT);
-    //llmodel_llama_destroy(model);
-    //llmodel_gptj_destroy(model);
 
-    //printPromptContext(prompt_context);
-    //llama_model.~LLamaModel();
-
+    std::string check_model_type = llmodel_getModelType(model);
+    if (check_model_type == "LLamaModel") {
+        llmodel_llama_destroy(model);
+    }
+    if (check_model_type == "GPTJ") {
+        llmodel_gptj_destroy(model);
+    }
 
     return 0;
 }

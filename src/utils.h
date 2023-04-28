@@ -82,10 +82,10 @@ bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt,
         if (arg == "-j" || arg == "--json_load") {
             json_filename = argv[++i];
             if (!json_filename.empty()) {
-                std::cout << "llama-chat: parsing options from json: " << json_filename << std::endl;
+                std::cout << "llmodel-chat: parsing options from json: " << json_filename << std::endl;
                 get_params_from_json(params, json_filename);
             } else {
-                std::cout << "llama-chat: trying to parse options from json but got empty filename." << std::endl;
+                std::cout << "llmodel-chat: trying to parse options from json but got empty filename." << std::endl;
             }
         } else if (arg == "--run-once") {
             continuous = false;
