@@ -76,6 +76,8 @@ endif ()
 # Include libs for Windows:
 if(WIN32 OR UNIX)
   set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+else if(APPLE)
+  set(CMAKE_EXE_LINKER_FLAGS "-static-libstdc++")
 endif()
 
 # Generate a header file with the version number
