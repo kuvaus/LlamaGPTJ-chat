@@ -210,7 +210,7 @@ int main(int argc, char* argv[]) {
         std::freopen("/dev/null", "w", stderr);
     #endif
 
-    
+
     llmodel_model model;
     bool use_animation = true;
     if (containsSubstring(params.model.c_str(), "gpt4all-j")) {
@@ -224,7 +224,7 @@ int main(int argc, char* argv[]) {
     auto check_model = llmodel_loadModel(model, params.model.c_str());
     
 
-    std::cout << "Model type:" << llmodel_getModelType(model) << std::endl;
+    std::cout << "Model type: " << llmodel_getModelType(model) << std::endl;
 
 
     //bring back stderr for now

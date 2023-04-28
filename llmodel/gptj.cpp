@@ -94,6 +94,7 @@ bool gptj_model_load(const std::string &fname, std::istream &fin, gptj_model & m
         fin.read((char *) &hparams.n_rot,   sizeof(hparams.n_rot));
         fin.read((char *) &hparams.f16,     sizeof(hparams.f16));
 
+        if (0) {
         printf("%s: n_vocab = %d\n", __func__, hparams.n_vocab);
         printf("%s: n_ctx   = %d\n", __func__, hparams.n_ctx);
         printf("%s: n_embd  = %d\n", __func__, hparams.n_embd);
@@ -101,6 +102,7 @@ bool gptj_model_load(const std::string &fname, std::istream &fin, gptj_model & m
         printf("%s: n_layer = %d\n", __func__, hparams.n_layer);
         printf("%s: n_rot   = %d\n", __func__, hparams.n_rot);
         printf("%s: f16     = %d\n", __func__, hparams.f16);
+        }
     }
 
     // load vocab
@@ -281,8 +283,9 @@ bool gptj_model_load(const std::string &fname, std::istream &fin, gptj_model & m
         model.memory_v = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_elements);
 
         const size_t memory_size = ggml_nbytes(model.memory_k) + ggml_nbytes(model.memory_v);
-
+        if (0) {
         printf("%s: memory_size = %8.2f MB, n_mem = %d\n", __func__, memory_size/1024.0/1024.0, n_mem);
+        }
     }
 
     // load weights
@@ -362,14 +365,15 @@ bool gptj_model_load(const std::string &fname, std::istream &fin, gptj_model & m
             //printf("%42s - [%5d, %5d], type = %6s, %6.2f MB\n", name.data(), ne[0], ne[1], ftype == 0 ? "float" : "f16", ggml_nbytes(tensor)/1024.0/1024.0);
             total_size += ggml_nbytes(tensor);
             if (++n_tensors % 8 == 0) {
-                printf(".");
-                fflush(stdout);
+                //printf(".");
+                //fflush(stdout);
             }
         }
 
         printf(" done\n");
-
+        if (0) {
         printf("%s: model size = %8.2f MB / num tensors = %d\n", __func__, total_size/1024.0/1024.0, n_tensors);
+        }
     }
 
     return true;
