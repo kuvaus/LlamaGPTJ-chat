@@ -2,7 +2,10 @@
 # Llmodel-Chat
 Simple command line chat program for [GPT-J](https://en.wikipedia.org/wiki/GPT-J) and [LLaMA](https://en.wikipedia.org/wiki/LLaMA) models written in C++. Based on [llama.cpp](https://github.com/ggerganov/llama.cpp) with some bindings from [llmodel-c](https://github.com/nomic-ai/gpt4all-chat).
 
+<img alt="GPTJ-Chat demo" src="https://user-images.githubusercontent.com/22169537/234323778-64365dc9-8bd9-4a48-b7de-ec0280a5fb4e.gif" width="600" />
 
+> **Warning**
+> Very early progress, might have bugs
 
 # Table of contents
 <!-- TOC -->
