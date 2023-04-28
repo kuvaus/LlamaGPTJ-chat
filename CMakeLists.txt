@@ -74,11 +74,12 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif ()
 
 # Include libs for Windows:
-if(WIN32 OR UNIX)
+if(APPLE)
+  set(CMAKE_EXE_LINKER_FLAGS "-Wl,-search_paths_first -lSystem")
+elseif(WIN32 OR UNIX)
   set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
-elseif(APPLE)
-  set(CMAKE_EXE_LINKER_FLAGS "-static-libstdc++")
 endif()
+  set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
 # Generate a header file with the version number
 configure_file(
