@@ -39,7 +39,7 @@ The LLaMA models are quite large: the 7B parameter versions are around 4.2 Gb an
 ### Download
 
 ```sh
-git clone --recurse-submodules https://github.com/kuvaus/llamagptj-chat
+git clone --recurse-submodules https://github.com/kuvaus/LlamaGPTJ-chat
 cd llmodel-chat
 ```
 
