@@ -47,7 +47,7 @@ jobs:
       run: |
         if ("${{ matrix.instructions }}" -eq "avx"){
           if ("${{ matrix.os }}" -eq "windows-latest") {
-            cp ${{github.workspace}}\build\bin\chat.exe chat.exe
+            cp ${{github.workspace}}\build\bin\Release\chat.exe chat.exe
             mv chat.exe chat-windows-latest-avx.exe
           } else {
             cp ${{github.workspace}}/build/bin/chat chat
@@ -55,7 +55,7 @@ jobs:
           }
         } else {
           if ("${{ matrix.os }}" -eq "windows-latest") {
-            cp ${{github.workspace}}\build\bin\chat.exe chat.exe
+            cp ${{github.workspace}}\build\bin\Release\chat.exe chat.exe
             mv chat.exe chat-windows-latest-avx2.exe
           } else {
             cp ${{github.workspace}}/build/bin/chat chat
