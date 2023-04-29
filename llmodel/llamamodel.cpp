@@ -13,7 +13,13 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <unistd.h>
+#ifdef _WIN32
+    #define NOMINMAX
+    #include <io.h>
+    #include <windows.h>
+#else
+    #include <unistd.h>
+#endif
 #include <random>
 #include <thread>
 

@@ -10,7 +10,15 @@
 
 //Switched to MinGW compilation.
 //No need to include <windows.h>
-#include <unistd.h>
+//Need this for windows colors.
+#ifdef _WIN32
+    #define NOMINMAX
+    #include <io.h>
+    #include <windows.h>
+#else
+    #include <unistd.h>
+#endif
+
 #include <cassert>
 #include <cmath>
 #include <string>
