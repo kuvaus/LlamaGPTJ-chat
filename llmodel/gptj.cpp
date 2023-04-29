@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <unistd.h>
+//#include <unistd.h>
 
 // default hparams (GPT-J 6B)
 struct gptj_hparams {

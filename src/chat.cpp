@@ -205,7 +205,7 @@ int main(int argc, char* argv[]) {
     //handle stderr for now
     int stderr_copy = dup(fileno(stderr));
     #ifdef _WIN32
-        std::freopen("NUL", "w", stderr);
+       // std::freopen("NUL", "w", stderr);
     #else
         std::freopen("/dev/null", "w", stderr);
     #endif
@@ -228,9 +228,12 @@ int main(int argc, char* argv[]) {
 
 
     //bring back stderr for now
-    dup2(stderr_copy, fileno(stderr));
-    close(stderr_copy);
-
+    #ifdef _WIN32
+    #else
+        dup2(stderr_copy, fileno(stderr));
+        close(stderr_copy);
+    #endif
+    
     if (check_model == false) {
         stop_display = true;
         future.wait();
