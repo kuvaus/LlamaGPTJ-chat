@@ -13,8 +13,10 @@
     #define NOMINMAX
     #include <io.h>
     #include <windows.h> 
+#else
+    #include <unistd.h>
 #endif
-#include <unistd.h>
+
 #include <cassert>
 #include <cmath>
 #include <string>
