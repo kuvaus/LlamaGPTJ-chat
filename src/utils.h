@@ -5,6 +5,11 @@
 
 #include "header.h" 
 
+//Need this for windows colors.
+#ifdef _WIN32
+    #include <windows.h> 
+#endif
+
 void set_console_color(ConsoleState &con_st, ConsoleColor color) {
     if (con_st.use_color && con_st.color != color) {
         //Windows handles colors differently.

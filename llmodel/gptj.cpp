@@ -12,13 +12,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#ifdef _WIN32
-    #define NOMINMAX
-    #include <io.h>
-    #include <windows.h>
-#else
-    #include <unistd.h>
-#endif
+#include <unistd.h>
 
 // default hparams (GPT-J 6B)
 struct gptj_hparams {
