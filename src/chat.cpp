@@ -212,7 +212,7 @@ int main(int argc, char* argv[]) {
 
 
     llmodel_model model;
-    bool use_animation = true;
+    bool use_animation = false;
     if (containsSubstring(params.model.c_str(), "gpt4all-j")) {
          model = llmodel_gptj_create();
     } else {
