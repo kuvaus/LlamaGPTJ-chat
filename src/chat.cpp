@@ -328,7 +328,6 @@ int main(int argc, char* argv[]) {
     
     
     llmodel_setThreadCount(model, params.n_threads);
-    llmodel_setMlock(model, true);
 
     if (interactive) {
         input = get_input(con_st, model, input);
