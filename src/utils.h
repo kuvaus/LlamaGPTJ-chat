@@ -5,6 +5,11 @@
 
 #include "header.h" 
 
+//Need this for Windows colors
+#ifdef _WIN32
+    #include <windows.h> 
+#endif
+
 bool containsSubstring(const std::string &str, const std::string &substr) {
     return str.find(substr) != std::string::npos;
 }

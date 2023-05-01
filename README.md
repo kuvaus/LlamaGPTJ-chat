@@ -44,7 +44,14 @@ cd LlamaGPTJ-chat
 ```
 
 ### Build
-
+On **Windows** you need to have MinGW or equivalent installed.
+```sh
+mkdir build
+cd build
+cmake .. -G "MinGW Makefiles"
+cmake --build . --parallel
+```
+On **Linux/Mac** it should work out of the box.
 ```sh
 mkdir build
 cd build

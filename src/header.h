@@ -5,18 +5,10 @@
 
 
 
-
 #include <cstdio>
 
-//Need this for windows colors.
-#ifdef _WIN32
-    #define NOMINMAX
-    #include <io.h>
-    #include <windows.h> 
-#else
-    #include <unistd.h>
-#endif
-
+//Switch to MinGW compilation.
+#include <unistd.h>
 #include <cassert>
 #include <cmath>
 #include <string>

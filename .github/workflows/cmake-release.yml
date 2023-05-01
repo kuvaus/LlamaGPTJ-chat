@@ -32,8 +32,20 @@ jobs:
       with:
           submodules: recursive
 
+    - name: Setup MinGW
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install mingw -y -libwinpthread
+        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DAVX2=${{ matrix.instructions == 'avx2' && 'ON' || 'OFF' }}
+      run: |
+        if ("${{ matrix.os }}" -eq "windows-latest") {
+          $env:PATH += ";C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin"
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DAVX2=${{ matrix.instructions == 'avx2' && 'ON' || 'OFF' }} -G "MinGW Makefiles"
+        } else {
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DAVX2=${{ matrix.instructions == 'avx2' && 'ON' || 'OFF' }}
+        }
       shell: pwsh
       
     - name: Build
@@ -47,7 +59,7 @@ jobs:
       run: |
         if ("${{ matrix.instructions }}" -eq "avx"){
           if ("${{ matrix.os }}" -eq "windows-latest") {
-            cp ${{github.workspace}}\build\bin\Release\chat.exe chat.exe
+            cp ${{github.workspace}}\build\bin\chat.exe chat.exe
             mv chat.exe chat-windows-latest-avx.exe
           } else {
             cp ${{github.workspace}}/build/bin/chat chat
@@ -55,7 +67,7 @@ jobs:
           }
         } else {
           if ("${{ matrix.os }}" -eq "windows-latest") {
-            cp ${{github.workspace}}\build\bin\Release\chat.exe chat.exe
+            cp ${{github.workspace}}\build\bin\chat.exe chat.exe
             mv chat.exe chat-windows-latest-avx2.exe
           } else {
             cp ${{github.workspace}}/build/bin/chat chat
@@ -102,4 +114,5 @@ jobs:
         prerelease: false
         files: |
           artifacts/**/*
+
 
