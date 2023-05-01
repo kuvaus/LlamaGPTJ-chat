@@ -176,7 +176,6 @@ int main(int argc, char* argv[]) {
 
     bool interactive = true;
     bool continuous = true;
-    bool read_prompt_template_from_file = true;
 
     std::string response;
     response.reserve(10000);
@@ -263,7 +262,7 @@ int main(int argc, char* argv[]) {
     }
 
     set_console_color(con_st, PROMPT);
-    std::cout << " " << prompt.c_str() << std::endl;
+    std::cout << "\n " << prompt.c_str() << std::endl;
     set_console_color(con_st, DEFAULT);
 
     //default prompt template, should work with most LlaMa and GPTJ models
