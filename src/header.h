@@ -51,9 +51,6 @@ struct LLMParams {
 
     int32_t n_batch = 9;
     std::string model = "./models/ggml-vicuna-13b-1.1-q4_2.bin";
-    #ifdef _WIN32
-        model = ".\\models\\ggml-vicuna-13b-1.1-q4_2.bin";
-    #endif
 };
 
 enum ConsoleColor {
