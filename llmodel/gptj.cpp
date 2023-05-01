@@ -94,13 +94,13 @@ bool gptj_model_load(const std::string &fname, std::istream &fin, gptj_model & m
         fin.read((char *) &hparams.n_rot,   sizeof(hparams.n_rot));
         fin.read((char *) &hparams.f16,     sizeof(hparams.f16));
 
-        printf("%s: n_vocab = %d\n", __func__, hparams.n_vocab);
-        printf("%s: n_ctx   = %d\n", __func__, hparams.n_ctx);
-        printf("%s: n_embd  = %d\n", __func__, hparams.n_embd);
-        printf("%s: n_head  = %d\n", __func__, hparams.n_head);
-        printf("%s: n_layer = %d\n", __func__, hparams.n_layer);
-        printf("%s: n_rot   = %d\n", __func__, hparams.n_rot);
-        printf("%s: f16     = %d\n", __func__, hparams.f16);
+        //printf("%s: n_vocab = %d\n", __func__, hparams.n_vocab);
+        //printf("%s: n_ctx   = %d\n", __func__, hparams.n_ctx);
+        //printf("%s: n_embd  = %d\n", __func__, hparams.n_embd);
+        //printf("%s: n_head  = %d\n", __func__, hparams.n_head);
+        //printf("%s: n_layer = %d\n", __func__, hparams.n_layer);
+        //printf("%s: n_rot   = %d\n", __func__, hparams.n_rot);
+        //printf("%s: f16     = %d\n", __func__, hparams.f16);
     }
 
     // load vocab
@@ -282,7 +282,7 @@ bool gptj_model_load(const std::string &fname, std::istream &fin, gptj_model & m
 
         const size_t memory_size = ggml_nbytes(model.memory_k) + ggml_nbytes(model.memory_v);
 
-        printf("%s: memory_size = %8.2f MB, n_mem = %d\n", __func__, memory_size/1024.0/1024.0, n_mem);
+        //printf("%s: memory_size = %8.2f MB, n_mem = %d\n", __func__, memory_size/1024.0/1024.0, n_mem);
     }
 
     // load weights
