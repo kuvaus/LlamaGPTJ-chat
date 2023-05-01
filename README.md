@@ -103,6 +103,8 @@ options:
   -r N, --remember N    number of chars to remember from start of previous answer (default: 200)
   -j,   --load_json FNAME
                         load options instead from json at FNAME (default: empty/no)
+  --load_template   FNAME
+                        load prompt template from a txt file at FNAME (default: empty/no)
   -m FNAME, --model FNAME
                         model path (current: models/ggml-gpt4all-j.bin)
 ```
@@ -116,4 +118,4 @@ This is useful when you want to store different temperature and sampling setting
 
 ## License
 
-This project is licensed under the MIT [License](https://github.com/kuvaus/llama-chat/blob/main/LICENSE)
+This project is licensed under the MIT [License](https://github.com/kuvaus/LlamaGPTJ-chat/blob/main/LICENSE)

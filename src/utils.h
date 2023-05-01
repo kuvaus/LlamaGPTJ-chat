@@ -5,6 +5,78 @@
 
 #include "header.h" 
 
+bool containsSubstring(const std::string &str, const std::string &substr) {
+    return str.find(substr) != std::string::npos;
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////
+////////////            READ PROMPT TEMPLATE FILE             ////////////
+//////////////////////////////////////////////////////////////////////////
+
+//This is a bit of a messy function but it should parse the template file into header, prompt and footer.
+std::tuple<std::string, std::string, std::string> read_prompt_template_file(const std::string& file_path) {
+    std::string prompt, header, footer;
+    std::ifstream file(file_path);
+
+    std::vector<std::string> lines;
+    std::string line;
+
+    //store all lines of prompt template into a vector
+    if (file.is_open()) {
+        while (std::getline(file, line)) {
+            lines.push_back(line);
+        }
+        file.close();
+    } else {
+        std::cerr << "Unable to open the prompt template file." << std::endl;
+        std::cerr << "Reverting to default prompt template." << std::endl;
+        return std::make_tuple("", "", ""); 
+    }
+
+    //find line containing %1 and store its index.
+    int input_index;
+    for (size_t i = 0; i < lines.size(); ++i) {
+        if (lines[i].find("%1") != std::string::npos) {
+            input_index = i;
+        }
+    }
+    //If there is only 1 line above %1, that will be ### prompt.
+    if (input_index == 1) {
+        prompt = lines[0];
+        header = "";
+    } else {
+        
+        //Put lines above the prompt-line into header.
+        header = lines[0];
+        for (size_t i = 1; i < input_index-1; ++i) {
+            header = header + "\n" + lines[i];
+        }
+        header = header  + " ";
+
+        //store prompt-line (line above input-line)
+        prompt = "\n" + lines[input_index-1] + " ";
+
+        //Put lines below the input-line into footer.
+        footer = "\n";
+        for (size_t i = input_index+1; i < lines.size(); ++i) {
+             footer = footer + lines[i]+" ";
+        }
+    }
+
+    return std::make_tuple(header, prompt, footer);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+////////////            READ PROMPT TEMPLATE FILE             ////////////
+//////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 void set_console_color(ConsoleState &con_st, ConsoleColor color) {
     if (con_st.use_color && con_st.color != color) {
         //Windows handles colors differently.
@@ -37,7 +109,7 @@ std::string random_prompt(int32_t seed) {
 }
 
 
-void print_usage(int argc, char** argv, const LLMParams& params, std::string& prompt, int& memory) {
+void print_usage(int argc, char** argv, const LLMParams& params, std::string& prompt, int& memory, std::string& prompt_template) {
     // Print usage information
     fprintf(stderr, "usage: %s [options]\n", argv[0]);
     fprintf(stderr, "\n");
@@ -63,11 +135,13 @@ void print_usage(int argc, char** argv, const LLMParams& params, std::string& pr
     fprintf(stderr, "  -r N, --remember N    number of chars to remember from start of previous answer (default: %d)\n", memory);
     fprintf(stderr, "  -j,   --load_json FNAME\n");
     fprintf(stderr, "                        load options instead from json at FNAME (default: empty/no)\n");
+    fprintf(stderr, "  --load_template   FNAME\n");
+    fprintf(stderr, "                        load prompt template from a txt file at FNAME (default: empty/no)\n");
     fprintf(stderr, "  -m FNAME, --model FNAME\n");
     fprintf(stderr, "                        model path (current: %s)\n", params.model.c_str());
     fprintf(stderr, "\n");
 }
-bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory) {
+bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory, std::string& prompt_template) {
     std::string json_filename = "";
 
     // Parse command-line arguments
@@ -106,14 +180,16 @@ bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt,
             params.n_batch = static_cast<int32_t>(std::stoi(argv[++i]));
         } else if (arg == "-r" || arg == "--remember") {
             memory = static_cast<int>(std::stoi(argv[++i]));
+        } else if (arg == "--load_template") {
+            prompt_template = argv[++i];
         } else if (arg == "-m" || arg == "--model") {
             params.model = argv[++i];
         } else if (arg == "-h" || arg == "--help") {
-            print_usage(argc, argv, params, prompt, memory);
+            print_usage(argc, argv, params, prompt, memory, prompt_template);
             exit(0);
         } else {
             fprintf(stderr, "error: unknown argument: %s\n", arg.c_str());
-            print_usage(argc, argv, params, prompt, memory);
+            print_usage(argc, argv, params, prompt, memory, prompt_template);
             exit(0);
         }
     }

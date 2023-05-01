@@ -78,10 +78,6 @@ std::string llmodel_getModelType(llmodel_model model)
     }
 }
 
-bool containsSubstring(const std::string &str, const std::string &substr) {
-    return str.find(substr) != std::string::npos;
-}
-
 void update_struct(llmodel_prompt_context  &prompt_context, LLMParams &params){
     // TODO: handle this better
     prompt_context.n_predict = params.n_predict;
@@ -95,7 +91,9 @@ void update_struct(llmodel_prompt_context  &prompt_context, LLMParams &params){
     prompt_context.context_erase = 0.75f; 
     }
 
-        // Set up the prompt context
+//llmodel_prompt_context prompt_context;
+
+    // Set up the prompt context
 llmodel_prompt_context prompt_context = {
         .logits = NULL,
         .logits_size = 0,
@@ -112,9 +110,10 @@ llmodel_prompt_context prompt_context = {
         .repeat_last_n = 10,
         .context_erase = 0.5
     };
-
+    
 std::string hashstring ="";
 std::string answer ="";
+
 
 //////////////////////////////////////////////////////////////////////////
 ////////////                 LLAMA FUNCTIONS                  ////////////
@@ -175,15 +174,18 @@ int main(int argc, char* argv[]) {
 
     bool interactive = true;
     bool continuous = true;
+    bool read_prompt_template_from_file = true;
 
     std::string response;
     response.reserve(10000);
     answer.reserve(10000);
     int memory = 200;
+    std::string prompt_template = "";
     LLMParams params;
     std::string prompt = "";
     std::string input = "";
     //std::string answer = "";
+    uint32_t magic;
    
 
     set_console_color(con_st, PROMPT);
@@ -195,7 +197,7 @@ int main(int argc, char* argv[]) {
     set_console_color(con_st, DEFAULT);
     std::cout << "" << std::endl;
     
-    parse_params(argc, argv, params, prompt, interactive, continuous, memory);
+    parse_params(argc, argv, params, prompt, interactive, continuous, memory, prompt_template);
 
 
 
@@ -203,28 +205,39 @@ int main(int argc, char* argv[]) {
     auto future = std::async(std::launch::async, display_loading);
 
     //handle stderr for now
+    //this is just to prevent unnecessary details during model loading.
     int stderr_copy = dup(fileno(stderr));
     #ifdef _WIN32
+        //disabled for windows for now. The line below needs MinGW support.
        // std::freopen("NUL", "w", stderr);
     #else
         std::freopen("/dev/null", "w", stderr);
     #endif
 
 
+
+
     llmodel_model model;
     bool use_animation = true;
-    if (containsSubstring(params.model.c_str(), "gpt4all-j")) {
-         model = llmodel_gptj_create();
+
+    //Load the model. The magic value checks if the model type is GPTJ or LlaMa
+    std::ifstream f(params.model.c_str(), std::ios::binary);
+    //uint32_t magic;
+    f.read(reinterpret_cast<char*>(&magic), sizeof(magic));
+    // Create model
+    if (magic == 0x67676d6c) {
+        f.close();
+        model = llmodel_gptj_create();
     } else {
-         model = llmodel_llama_create();
+        f.close();
+        model = llmodel_llama_create();
     }
+
 
     std::cout << "\r" << "LlamaGPTJ-chat: loading " << params.model.c_str()  << std::endl;
     
     auto check_model = llmodel_loadModel(model, params.model.c_str());
-    
-
-    std::cout << "Model type: " << llmodel_getModelType(model) << std::endl;
+    //std::cout << "Model type: " << llmodel_getModelType(model) << std::endl;
 
 
     //bring back stderr for now
@@ -254,19 +267,22 @@ int main(int argc, char* argv[]) {
     std::cout << " " << prompt.c_str() << std::endl;
     set_console_color(con_st, DEFAULT);
 
+    //default prompt template, should work with most LlaMa and GPTJ models
     std::string default_prefix = "### Instruction:\n The prompt below is a question to answer, a task to complete, or a conversation to respond to; decide which and write an appropriate response.";
     std::string default_header = "\n### Prompt: ";
     std::string default_footer = "\n### Response: ";
-  
-  
-  
+
+    //load prompt template from a file instead
+    if (prompt_template != "") {
+        std::tie(default_prefix, default_header, default_footer) = read_prompt_template_file(prompt_template);
+    }
+
     //////////////////////////////////////////////////////////////////////////
     ////////////            PROMPT LAMBDA FUNCTIONS               ////////////
     //////////////////////////////////////////////////////////////////////////
 
 
     auto lambda_prompt = [](int32_t token_id, const char *promptchars)  {
-	//auto lambda_prompt = [](int32_t token_id) {
 	        // You can handle prompt here if needed
 	        //std::cout << token_id << std::flush;
 	        //std::cout << promptchars << std::flush;
@@ -275,7 +291,7 @@ int main(int argc, char* argv[]) {
 
 
     auto lambda_response = [](int32_t token_id, const char *responsechars) {
-	//auto lambda_response = [&hashstring, &answer](int32_t token_id, std::string response) {
+    
 	   		std::string response = responsechars;
 	
 	        if (!response.empty()) {
@@ -283,6 +299,7 @@ int main(int argc, char* argv[]) {
 	        stop_display = true;
 
 	        // handle ### token separately
+            // this might not be needed in the fuure
 	        if (response == "#" || response == "##") {
 	            hashstring += response;
 	        } else if (response == "###" || hashstring == "###") {
