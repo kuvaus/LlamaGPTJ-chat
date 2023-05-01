@@ -183,6 +183,14 @@ int main(int argc, char* argv[]) {
     int memory = 200;
     std::string prompt_template = "";
     LLMParams params;
+    
+
+    //convert the default model path into Windows format if on WIN32
+    #ifdef _WIN32
+        std::filesystem::path p(params.model);
+        params.model = p.make_preferred().string();
+    #endif
+
     std::string prompt = "";
     std::string input = "";
     //std::string answer = "";
