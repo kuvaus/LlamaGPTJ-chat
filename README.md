@@ -7,6 +7,19 @@ Simple command line chat program for [GPT-J](https://en.wikipedia.org/wiki/GPT-J
 > **Warning**
 > Very early progress, might have bugs
 
+> **Note**
+> Regarding the Github made release .exe builds on Windows.
+> 
+> There is currently an issue with the tokenize function with GPTJ
+> 
+> I will try to fix it. Meanwhile you can:
+> 1) Use llama-based models
+> 2) Use GPTJ only version: [gptj-chat](https://github.com/kuvaus/gptj-chat/releases/tag/v0.1.0)
+> 3) Build it yourself
+> 
+> I'll remove this note once I get it working.
+
+
 # Table of contents
 <!-- TOC -->
 * [GPT-J model](#gpt-j-model)
