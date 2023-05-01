@@ -50,7 +50,7 @@ struct LLMParams {
     float temp = 0.9f;
 
     int32_t n_batch = 9;
-    std::string model = "models/ggml-vicuna-13b-1.1-q4_2.bin";
+    std::string model = "./models/ggml-vicuna-13b-1.1-q4_2.bin";
 };
 
 enum ConsoleColor {

@@ -92,8 +92,8 @@ void update_struct(llmodel_prompt_context  &prompt_context, LLMParams &params){
     }
 
     // Set up the prompt context
-llmodel_prompt_context prompt_context;
-/*
+//llmodel_prompt_context prompt_context;
+
 llmodel_prompt_context prompt_context = {
         .logits = NULL,
         .logits_size = 0,
@@ -111,7 +111,7 @@ llmodel_prompt_context prompt_context = {
         .context_erase = 0.5
     };
     
-*/
+
     
 std::string hashstring ="";
 std::string answer ="";
