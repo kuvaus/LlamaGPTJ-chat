@@ -41,8 +41,8 @@ bool LLamaModel::loadModel(const std::string &modelPath)
     d_ptr->params.n_parts    = params.n_parts;
     d_ptr->params.seed       = params.seed;
     d_ptr->params.f16_kv     = params.memory_f16;
-    d_ptr->params.use_mmap   = params.use_mmap;
-    d_ptr->params.use_mlock  = params.use_mlock;
+    d_ptr->params.use_mmap   = llama_mmap_supported();
+    d_ptr->params.use_mlock  = llama_mlock_supported();
 
     d_ptr->ctx = llama_init_from_file(modelPath.c_str(), d_ptr->params);
     if (!d_ptr->ctx) {
@@ -147,31 +147,11 @@ void LLamaModel::prompt(const std::string &prompt,
     // predict next tokens
     int32_t totalPredictions = 0;
     for (int i = 0; i < promptCtx.n_predict; i++) {
-    	
-    	
         // sample next token
-        float* logits = llama_get_logits(d_ptr->ctx);
-        std::vector<llama_token_data> candidates;
-        candidates.resize(llama_n_vocab(d_ptr->ctx));
-
-          for (llama_token i = 0; i < candidates.size(); i++) {
-            candidates[i] = llama_token_data{
-            i, logits[i], 0.0f,
-            };
-        }
-        llama_token_data_array candidates_data = {
-            candidates.data(), candidates.size(), false,
-        };
-
-        // Temperature sampling with repetition penalty
-        llama_sample_repetition_penalty(
-            d_ptr->ctx, &candidates_data,
-            promptCtx.tokens.data() + promptCtx.n_ctx - promptCtx.repeat_last_n, promptCtx.repeat_last_n,
+        llama_token id = llama_sample_top_p_top_k(d_ptr->ctx,
+            promptCtx.tokens.data() + promptCtx.n_ctx - promptCtx.repeat_last_n,
+            promptCtx.repeat_last_n, promptCtx.top_k, promptCtx.top_p, promptCtx.temp,
             promptCtx.repeat_penalty);
-        llama_sample_top_k(d_ptr->ctx, &candidates_data, promptCtx.top_k);
-        llama_sample_top_p(d_ptr->ctx, &candidates_data, promptCtx.top_p);
-        llama_sample_temperature(d_ptr->ctx, &candidates_data, promptCtx.temp);
-        llama_token id = llama_sample_token(d_ptr->ctx, &candidates_data);
 
         // Check if the context has run out...
         if (promptCtx.n_past + 1 > promptCtx.n_ctx) {
@@ -227,4 +207,3 @@ void LLamaModel::recalculateContext(PromptContext &promptCtx, std::function<bool
 stop_generating:
     recalculate(false);
 }
-

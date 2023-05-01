@@ -119,7 +119,6 @@ void llmodel_prompt(llmodel_model model, const char *prompt,
  * @param n_threads The number of threads to be used.
  */
 void llmodel_setThreadCount(llmodel_model model, int32_t n_threads);
-void llmodel_setMlock(llmodel_model model, bool mlock);
 
 /**
  * Get the number of threads currently being used by the model.

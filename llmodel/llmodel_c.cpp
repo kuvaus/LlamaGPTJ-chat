@@ -126,9 +126,3 @@ int32_t llmodel_threadCount(llmodel_model model)
     LLModelWrapper *wrapper = reinterpret_cast<LLModelWrapper*>(model);
     return wrapper->llModel->threadCount();
 }
-
-void llmodel_setMlock(llmodel_model model, bool mlock)
-{
-    LLModelWrapper *wrapper = reinterpret_cast<LLModelWrapper*>(model);
-    wrapper->llModel->setMlock(mlock);
-}

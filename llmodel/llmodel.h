@@ -11,7 +11,6 @@ public:
     virtual ~LLModel() {}
 
     virtual bool loadModel(const std::string &modelPath) = 0;
-    virtual bool loadModel(const std::string &modelPath, std::istream &fin) = 0;
     virtual bool isModelLoaded() const = 0;
     struct PromptContext {
         std::vector<float> logits;      // logits of current context
@@ -35,7 +34,7 @@ public:
         PromptContext &ctx) = 0;
     virtual void setThreadCount(int32_t n_threads) {}
     virtual int32_t threadCount() { return 1; }
-    virtual void setMlock(bool mlock) {};
+
 protected:
     virtual void recalculateContext(PromptContext &promptCtx,
         std::function<bool(bool)> recalculate) = 0;

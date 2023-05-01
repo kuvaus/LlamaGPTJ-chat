@@ -13,7 +13,6 @@ public:
     ~LLamaModel();
 
     bool loadModel(const std::string &modelPath) override;
-    bool loadModel(const std::string &modelPath, std::istream &fin) override;
     bool isModelLoaded() const override;
     void prompt(const std::string &prompt,
         std::function<bool(int32_t)> promptCallback,
@@ -22,8 +21,6 @@ public:
         PromptContext &ctx) override;
     void setThreadCount(int32_t n_threads) override;
     int32_t threadCount() override;
-    void setMlock(bool mlock) override;
-
 
 protected:
     void recalculateContext(PromptContext &promptCtx,

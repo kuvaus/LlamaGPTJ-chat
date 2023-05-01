@@ -6,15 +6,6 @@
 #include <vector>
 #include "llmodel.h"
 
-//Need this for windows.
-#ifdef _WIN32
-    #define NOMINMAX
-    #include <io.h>
-    #include <windows.h> 
-#else
-    #include <unistd.h>
-#endif
-
 class GPTJPrivate;
 class GPTJ : public LLModel {
 public:
@@ -22,7 +13,6 @@ public:
     ~GPTJ();
 
     bool loadModel(const std::string &modelPath) override;
-    bool loadModel(const std::string &modelPath, std::istream &fin) override;
     bool isModelLoaded() const override;
     void prompt(const std::string &prompt,
         std::function<bool(int32_t)> promptCallback,
