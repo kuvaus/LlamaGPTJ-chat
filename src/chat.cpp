@@ -211,7 +211,7 @@ int main(int argc, char* argv[]) {
     int stderr_copy = dup(fileno(stderr));
     #ifdef _WIN32
         //disabled for windows for now. The line below needs MinGW support.
-       // std::freopen("NUL", "w", stderr);
+        std::freopen("NUL", "w", stderr);
     #else
         std::freopen("/dev/null", "w", stderr);
     #endif
@@ -243,11 +243,8 @@ int main(int argc, char* argv[]) {
 
 
     //bring back stderr for now
-    #ifdef _WIN32
-    #else
-        dup2(stderr_copy, fileno(stderr));
-        close(stderr_copy);
-    #endif
+    dup2(stderr_copy, fileno(stderr));
+    close(stderr_copy);
     
     if (check_model == false) {
         stop_display = true;

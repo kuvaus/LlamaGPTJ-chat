@@ -70,7 +70,7 @@ struct gptj_model {
 
 // load the model's weights from a stream
 bool gptj_model_load(const std::string &fname, std::istream &fin, gptj_model & model, gpt_vocab & vocab) {
-    printf("%s: loading model from '%s' - please wait ...\n", __func__, fname.c_str());
+    //printf("%s: loading model from '%s' - please wait ...\n", __func__, fname.c_str());
 
     // verify magic
     {
@@ -185,7 +185,7 @@ bool gptj_model_load(const std::string &fname, std::istream &fin, gptj_model & m
 
         ctx_size += (5 + 10*n_layer)*256; // object overhead
 
-        printf("%s: ggml ctx size = %6.2f MB\n", __func__, ctx_size/(1024.0*1024.0));
+        //printf("%s: ggml ctx size = %6.2f MB\n", __func__, ctx_size/(1024.0*1024.0));
     }
 
     // create the ggml context
@@ -290,7 +290,7 @@ bool gptj_model_load(const std::string &fname, std::istream &fin, gptj_model & m
         int n_tensors = 0;
         size_t total_size = 0;
 
-        printf("%s: ", __func__);
+        //printf("%s: ", __func__);
 
         while (true) {
             int32_t n_dims;
@@ -361,15 +361,15 @@ bool gptj_model_load(const std::string &fname, std::istream &fin, gptj_model & m
 
             //printf("%42s - [%5d, %5d], type = %6s, %6.2f MB\n", name.data(), ne[0], ne[1], ftype == 0 ? "float" : "f16", ggml_nbytes(tensor)/1024.0/1024.0);
             total_size += ggml_nbytes(tensor);
-            if (++n_tensors % 8 == 0) {
-                printf(".");
-                fflush(stdout);
-            }
+            //if (++n_tensors % 8 == 0) {
+            //    printf(".");
+            //    fflush(stdout);
+            //}
         }
 
-        printf(" done\n");
+        //printf(" done\n");
 
-        printf("%s: model size = %8.2f MB / num tensors = %d\n", __func__, total_size/1024.0/1024.0, n_tensors);
+        //printf("%s: model size = %8.2f MB / num tensors = %d\n", __func__, total_size/1024.0/1024.0, n_tensors);
     }
 
     return true;
