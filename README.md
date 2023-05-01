@@ -27,7 +27,7 @@ You need to download a GPT-J model first. Here are direct links to models:
 They're around 3.8 Gb each. The chat program stores the model in RAM on runtime so you need enough memory to run. You can get more details on GPT-J models from [gpt4all.io](https://gpt4all.io/) or [nomic-ai/gpt4all](https://github.com/nomic-ai/gpt4all) github.
 
 ## LLaMA model
-You need to download a LLaMA model first. The original weights are for research purposes and you can apply for access [here](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/). Below are direct links to derived models:
+Alternatively you need to download a LLaMA model first. The original weights are for research purposes and you can apply for access [here](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/). Below are direct links to derived models:
 
 >- Vicuna 7b **v1.1**: [ggml-vicuna-7b-1.1-q4_2.bin](https://gpt4all.io/models/ggml-vicuna-7b-1.1-q4_2.bin)
 >- Vicuna 13b **v1.1**: [ggml-vicuna-13b-1.1-q4_2.bin](https://gpt4all.io/models/ggml-vicuna-13b-1.1-q4_2.bin)
