@@ -232,6 +232,24 @@ int main(int argc, char* argv[]) {
         model = llmodel_gptj_create();
     } else {
         f.close();
+	    
+	prompt_context = {
+        .logits = NULL,
+        .logits_size = 0,
+        .tokens = NULL,
+        .tokens_size = 0,
+        .n_past = 0,
+        .n_ctx = 1024,
+        .n_predict = 50,
+        .top_k = 10,
+        .top_p = 0.9,
+        .temp = 1.0,
+        .n_batch = 1,
+        .repeat_penalty = 1.2,
+        .repeat_last_n = 10,
+        .context_erase = 0.5
+    	};
+	    
         model = llmodel_llama_create();
     }
 
