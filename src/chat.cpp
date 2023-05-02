@@ -98,17 +98,17 @@ llmodel_prompt_context prompt_context = {
         .logits = NULL,
         .logits_size = 0,
         .tokens = NULL,
-        .tokens_size = 0,
+        .tokens_size = 4096,
         .n_past = 0,
         .n_ctx = 1024,
         .n_predict = 50,
-        .top_k = 10,
-        .top_p = 0.9,
-        .temp = 1.0,
-        .n_batch = 1,
-        .repeat_penalty = 1.2,
-        .repeat_last_n = 10,
-        .context_erase = 0.5
+        .top_k = 40,
+        .top_p = 0.95,
+        .temp = 0.28,
+        .n_batch = 9,
+        .repeat_penalty = 1.1,
+        .repeat_last_n = 64,
+        .context_erase = 0.75
     };
     
 

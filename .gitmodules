@@ -1,3 +1,6 @@
 [submodule "llama.cpp"]
-	path = llama.cpp
+	path = llmodel/llama.cpp
+	url = https://github.com/ggerganov/llama.cpp
+[submodule "llmodel/llama.cpp"]
+	path = llmodel/llama.cpp
 	url = https://github.com/ggerganov/llama.cpp

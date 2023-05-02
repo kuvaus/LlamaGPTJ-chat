@@ -38,9 +38,9 @@ struct LLMParams {
     int32_t n_threads = std::min(4, (int32_t)std::thread::hardware_concurrency());
     int32_t n_predict = 200;
 
-    int32_t top_k = 50400;
-    float top_p = 1.0f;
-    float temp = 0.9f;
+    int32_t top_k = 40;
+    float top_p = 0.95f;
+    float temp = 0.28f;
 
     int32_t n_batch = 9;
     std::string model = "./models/ggml-vicuna-13b-1.1-q4_2.bin";
