@@ -103,9 +103,9 @@ options:
                         prompt to start generation with (default: empty)
   --random-prompt       start with a randomized prompt.
   -n N, --n_predict N   number of tokens to predict (default: 200)
-  --top_k N             top-k sampling (default: 50400)
-  --top_p N             top-p sampling (default: 1.0)
-  --temp N              temperature (default: 0.9)
+  --top_k N             top-k sampling (default: 40)
+  --top_p N             top-p sampling (default: 0.9)
+  --temp N              temperature (default: 0.3)
   -b N, --batch_size N  batch size for prompt processing (default: 9)
   -r N, --remember N    number of chars to remember from start of previous answer (default: 200)
   -j,   --load_json FNAME
@@ -113,7 +113,7 @@ options:
   --load_template   FNAME
                         load prompt template from a txt file at FNAME (default: empty/no)
   -m FNAME, --model FNAME
-                        model path (current: models/ggml-gpt4all-j.bin)
+                        model path (current: ./models/ggml-vicuna-13b-1.1-q4_2.bin)
 ```
 
 You can also fetch parameters from a json file with `--load_json "/path/to/file.json"` flag.  The json file has to be in following format:
