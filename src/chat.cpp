@@ -21,13 +21,17 @@ void display_frames() {
     con_st.use_color = true;
     while (!stop_display) {
         set_console_color(con_st, PROMPT);
-        std::cout << "\r" << frames[frame_index % 4] << std::flush;
+        std::cerr << "\r" << frames[frame_index % 4] << std::flush;
         frame_index++;
         set_console_color(con_st, DEFAULT);
-        std::this_thread::sleep_for(std::chrono::milliseconds(180));
+        if (!stop_display){
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            std::cerr << "\r" << " " << std::flush;
+            std::cerr << "\r" << std::flush;
+        }
     }
-    std::cout << "\r" << " " << std::flush;
-    std::cout << "\r" << std::flush;
+    //std::cout << "\r" << " " << std::flush;
+    //std::cout << "\r" << std::flush;
 }
 
 void display_loading() {
@@ -305,6 +309,8 @@ int main(int argc, char* argv[]) {
             if (stop_display == false) {
 	            stop_display = true;
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                std::cerr << "\r" << " " << std::flush;
+                std::cerr << "\r" << std::flush;
             }
 	        // handle ### token separately
             // this might not be needed in the fuure

@@ -35,7 +35,7 @@ std::tuple<std::string, std::string, std::string> read_prompt_template_file(cons
     } else {
         std::cerr << "Unable to open the prompt template file." << std::endl;
         std::cerr << "Reverting to default prompt template." << std::endl;
-        return std::make_tuple("", "", ""); 
+        return std::make_tuple("### Instruction:\n The prompt below is a question to answer, a task to complete, or a conversation to respond to; decide which and write an appropriate response.", "\n### Prompt: ", "\n### Response: "); 
     }
 
     //find line containing %1 and store its index.
