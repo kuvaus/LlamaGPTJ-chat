@@ -24,7 +24,7 @@ void display_frames() {
         std::cout << "\r" << frames[frame_index % 4] << std::flush;
         frame_index++;
         set_console_color(con_st, DEFAULT);
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(180));
     }
     std::cout << "\r" << " " << std::flush;
     std::cout << "\r" << std::flush;
@@ -302,8 +302,11 @@ int main(int argc, char* argv[]) {
 	
 	        if (!response.empty()) {
 	        // stop the animation, printing response
-	        stop_display = true;
-
+            if (stop_display == false) {
+	            stop_display = true;
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            }
+            //sleep_for(std::chrono::milliseconds(200));
 	        // handle ### token separately
             // this might not be needed in the fuure
 	        if (response == "#" || response == "##") {
