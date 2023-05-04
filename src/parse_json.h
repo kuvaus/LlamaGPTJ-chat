@@ -9,7 +9,6 @@
 bool stob(const std::string& str) {
     std::string lowerStr = str;
     std::transform(str.begin(), str.end(), lowerStr.begin(), ::tolower);
-
     if (lowerStr == "true") {
         return true;
     } else if (lowerStr == "false") {
@@ -65,8 +64,8 @@ void get_params_from_json(LLMParams & params, std::string& prompt, bool& interac
         params.n_batch = std::stoi(parsed["n_batch"]);
     if (parsed.find("seed") != parsed.end())
         params.seed = std::stoi(parsed["seed"]);
-    if (parsed.find("n_threads") != parsed.end())
-        params.n_threads = std::stoi(parsed["n_threads"]);
+    if (parsed.find("threads") != parsed.end())
+        params.n_threads = std::stoi(parsed["threads"]);
     if (parsed.find("model") != parsed.end())
         params.model = removeQuotes(parsed["model"]);
 
