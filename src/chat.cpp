@@ -306,7 +306,7 @@ int main(int argc, char* argv[]) {
 	            stop_display = true;
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
             }
-            //sleep_for(std::chrono::milliseconds(200));
+            
 	        // handle ### token separately
             // this might not be needed in the fuure
 	        if (response == "#" || response == "##") {
