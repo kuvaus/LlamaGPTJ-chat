@@ -5,6 +5,20 @@
 
 #include "header.h" 
 
+//helper function to convert string to bool
+bool stob(const std::string& str) {
+    std::string lowerStr = str;
+    std::transform(str.begin(), str.end(), lowerStr.begin(), ::tolower);
+
+    if (lowerStr == "true") {
+        return true;
+    } else if (lowerStr == "false") {
+        return false;
+    } else {
+        throw std::invalid_argument("Invalid boolean string");
+    }
+}
+
 std::string readFile(const std::string& filename) {
     std::ifstream inFile(filename);
     if (!inFile) {
@@ -36,7 +50,7 @@ std::string removeQuotes(const std::string& input) {
     return result;
 }
 
-void get_params_from_json(LLMParams & params, std::string& prompt, std::string& filename) {
+void get_params_from_json(LLMParams & params, std::string& prompt, bool& interactive, bool& continuous, int& memory, std::string& prompt_template, std::string& filename) {
     std::map<std::string, std::string> parsed = parse_json_string(readFile(filename));
 
     if (parsed.find("top_p") != parsed.end())
@@ -55,8 +69,17 @@ void get_params_from_json(LLMParams & params, std::string& prompt, std::string& 
         params.n_threads = std::stoi(parsed["n_threads"]);
     if (parsed.find("model") != parsed.end())
         params.model = removeQuotes(parsed["model"]);
+
     if (parsed.find("prompt") != parsed.end())
         prompt = removeQuotes(parsed["prompt"]);
+    if (parsed.find("no-interactive") != parsed.end())
+        interactive = stob(parsed["no-interactive"]);        
+    if (parsed.find("load_template") != parsed.end())
+        prompt_template = removeQuotes(parsed["load_template"]);        
+    if (parsed.find("run-once") != parsed.end())
+        continuous = stob(parsed["run-once"]);        
+    if (parsed.find("remember") != parsed.end())
+        memory = std::stoi(parsed["remember"]);
 }
 
 

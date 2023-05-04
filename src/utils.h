@@ -14,8 +14,6 @@ bool containsSubstring(const std::string &str, const std::string &substr) {
     return str.find(substr) != std::string::npos;
 }
 
-
-
 //////////////////////////////////////////////////////////////////////////
 ////////////            READ PROMPT TEMPLATE FILE             ////////////
 //////////////////////////////////////////////////////////////////////////
@@ -157,7 +155,7 @@ bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt,
             json_filename = argv[++i];
             if (!json_filename.empty()) {
                 std::cout << "LlamaGPTJ-chat: parsing options from json: " << json_filename << std::endl;
-                get_params_from_json(params, json_filename);
+                get_params_from_json(params, prompt, interactive, continuous, memory, prompt_template, json_filename);
             } else {
                 std::cout << "LlamaGPTJ-chat: trying to parse options from json but got empty filename." << std::endl;
             }
