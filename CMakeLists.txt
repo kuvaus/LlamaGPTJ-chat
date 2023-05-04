@@ -2,14 +2,17 @@ cmake_minimum_required (VERSION 3.2)
 
 if(APPLE)
   # Build a Universal binary on macOS
-  set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
+  # Checks if Big Sur or newer to possibly support ARM
+  if(CMAKE_HOST_SYSTEM_VERSION VERSION_GREATER_EQUAL 20)
+    set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
+  endif()
 endif()
 
 project(LlamaGPTJ-chat)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
-set(VERSION_PATCH 6)
+set(VERSION_PATCH 7)
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS "on")

@@ -22,7 +22,12 @@
 #include <regex>
 #include <cstring>
 #include <functional>
-#include <filesystem>
+
+//For Windows paths
+//Commented out to support really old xcode
+#ifdef _WIN32
+    #include <filesystem>
+#endif
 
 
 #include <typeinfo>
