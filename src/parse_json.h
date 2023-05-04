@@ -73,11 +73,11 @@ void get_params_from_json(LLMParams & params, std::string& prompt, bool& interac
     if (parsed.find("prompt") != parsed.end())
         prompt = removeQuotes(parsed["prompt"]);
     if (parsed.find("no-interactive") != parsed.end())
-        interactive = stob(parsed["no-interactive"]);        
+        interactive = stob(removeQuotes(parsed["no-interactive"]));        
     if (parsed.find("load_template") != parsed.end())
         prompt_template = removeQuotes(parsed["load_template"]);        
     if (parsed.find("run-once") != parsed.end())
-        continuous = stob(parsed["run-once"]);        
+        continuous = stob(removeQuotes(parsed["run-once"]));        
     if (parsed.find("remember") != parsed.end())
         memory = std::stoi(parsed["remember"]);
 }
