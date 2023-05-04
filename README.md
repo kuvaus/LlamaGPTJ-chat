@@ -116,12 +116,29 @@ options:
                         model path (current: ./models/ggml-vicuna-13b-1.1-q4_2.bin)
 ```
 
-You can also fetch parameters from a json file with `--load_json "/path/to/file.json"` flag.  The json file has to be in following format:
+You can also fetch parameters from a json file with `--load_json "/path/to/file.json"` flag. The JSON file loader is designed to be simple in order to prevent any external dependencies, and as a result, the JSON file must follow a specific format. Here is a simple example:
 
 ```javascript
 {"top_p": 1.0, "top_k": 50400, "temp": 0.9, "n_batch": 9}
 ```
 This is useful when you want to store different temperature and sampling settings.
+
+And a more detailed one: 
+```javascript
+{
+"top_p": 1.0,
+"top_k": 50400,
+"temp": 0.9,
+"n_batch": 20,
+"threads": 12,
+"prompt": "Once upon a time",
+"load_template": "/path/to/prompt_template_sample.txt",
+"model": "/path/to/ggml-gpt4all-j-v1.3-groovy.bin",
+"no-interactive": "true",
+"remember": 200
+}
+```
+This one loads the prompt from the json, uses a specific template, and runs the program once in no-interactive mode so user does not have to press any input.
 
 ## License
 
