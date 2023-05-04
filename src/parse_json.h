@@ -36,7 +36,7 @@ std::string removeQuotes(const std::string& input) {
     return result;
 }
 
-void get_params_from_json(LLMParams & params, std::string& filename) {
+void get_params_from_json(LLMParams & params, std::string& prompt, std::string& filename) {
     std::map<std::string, std::string> parsed = parse_json_string(readFile(filename));
 
     if (parsed.find("top_p") != parsed.end())
@@ -55,6 +55,8 @@ void get_params_from_json(LLMParams & params, std::string& filename) {
         params.n_threads = std::stoi(parsed["n_threads"]);
     if (parsed.find("model") != parsed.end())
         params.model = removeQuotes(parsed["model"]);
+    if (parsed.find("prompt") != parsed.end())
+        prompt = removeQuotes(parsed["prompt"]);
 }
 
 
