@@ -134,7 +134,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "  --top_k            N  top-k sampling (default: %d)\n", params.top_k);
     fprintf(stderr, "  --top_p            N  top-p sampling (default: %.1f)\n", params.top_p);
     fprintf(stderr, "  --temp             N  temperature (default: %.1f)\n", params.temp);
-    fprintf(stderr, "  --n_ctx            N  number of tokens in context window (default: %.1f)\n", params.temp);
+    fprintf(stderr, "  --n_ctx            N  number of tokens in context window (default: %d)\n", params.n_ctx);
     fprintf(stderr, "  -b N, --batch_size N  batch size for prompt processing (default: %d)\n", params.n_batch);
     fprintf(stderr, "  --repeat_penalty   N  repeat_penalty (default: %.1f)\n", params.repeat_penalty);
     fprintf(stderr, "  --repeat_last_n    N  last n tokens to penalize  (default: %d)\n", params.repeat_last_n);

@@ -98,7 +98,7 @@ You can view the help and full parameter list with:
 ```sh
 usage: ./bin/chat [options]
 
-A simple chat program for GPT-J and LLaMA based models.
+A simple chat program for GPT-J, LLaMA, and MPT models.
 You can set specific initial prompt with the -p flag.
 Runs default in interactive and continuous mode.
 Type 'quit', 'exit' or, 'Ctrl+C' to quit.
@@ -116,12 +116,12 @@ options:
   -n N, --n_predict  N  number of tokens to predict (default: 50)
   --top_k            N  top-k sampling (default: 40)
   --top_p            N  top-p sampling (default: 0.9)
-  --temp             N  temperature (default: 0.3)
-  -b N, --batch_size N  batch size for prompt processing (default: 9)
+  --temp             N  temperature (default: 0.9)
+  --n_ctx            N  number of tokens in context window (default: 0.9)
+  -b N, --batch_size N  batch size for prompt processing (default: 20)
   --repeat_penalty   N  repeat_penalty (default: 1.1)
-  --repeat_last_n    N  repeat_last_n  (default: 64)
-  --context_erase    N  context_erase  (default: 0.8)
-  -r N, --remember   N    number of chars to remember from start of previous answer (default: 200)
+  --repeat_last_n    N  last n tokens to penalize  (default: 64)
+  --context_erase    N  percent of context to erase  (default: 0.8)
   -j,   --load_json FNAME
                         load options instead from json at FNAME (default: empty/no)
   --load_template   FNAME
