@@ -49,8 +49,8 @@ struct chatParams {
         int32_t *tokens = NULL;             // current tokens in the context window
         size_t tokens_size = 0;             // the size of the raw tokens vector
         int32_t n_past = 0;                 // number of tokens in past conversation
-        int32_t n_ctx = 0;                  // number of tokens possible in context window
         // below contains all the parameters you can import from json or with cli arguments
+        int32_t n_ctx = 0;                  // number of tokens possible in context window
         int32_t n_predict = 50;
         int32_t top_k = 40;
         float top_p = 0.95;
@@ -67,7 +67,6 @@ struct chatParams {
 		bool use_animation = true;
 		std::string load_template = ""; //template file location
 		bool run_once = false;
-        int32_t remember = 200;
 		std::string load_json = ""; //json file location
 	
 };

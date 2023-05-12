@@ -105,8 +105,8 @@ void update_struct(llmodel_prompt_context  &prompt_context, chatParams &params){
     prompt_context.context_erase = params.context_erase; 
     }
     
-std::string hashstring ="";
-std::string answer ="";
+std::string hashstring = "";
+std::string answer = "";
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -157,9 +157,6 @@ int main(int argc, char* argv[]) {
     con_st.use_color = true;
     set_console_color(con_st, DEFAULT);
 
-    std::string response;
-    response.reserve(10000);
-    answer.reserve(10000);
     chatParams params;
     
 
@@ -182,8 +179,12 @@ int main(int argc, char* argv[]) {
     set_console_color(con_st, DEFAULT);
     std::cout << "" << std::endl;
     
+    //get all parameters from cli arguments or json
     parse_params(argc, argv, params);
-
+    
+    //Create a prompt_context and copy all params from chatParams to prompt_context
+    llmodel_prompt_context prompt_context;
+    update_struct(prompt_context, params);
 
 
 
@@ -255,9 +256,9 @@ int main(int argc, char* argv[]) {
 
     auto lambda_response = [](int32_t token_id, const char *responsechars) {
     
-	   		std::string response = responsechars;
+            std::string responsestring(responsechars);
 	
-	        if (!response.empty()) {
+            if (!responsestring.empty()) {
 	        // stop the animation, printing response
             if (stop_display == false) {
 	            stop_display = true;
@@ -267,14 +268,14 @@ int main(int argc, char* argv[]) {
             }
 	        // handle ### token separately
             // this might not be needed in the fuure
-	        if (response == "#" || response == "##") {
-	            hashstring += response;
-	        } else if (response == "###" || hashstring == "###") {
+	        if (responsestring == "#" || responsestring == "##") {
+	            hashstring += responsestring;
+	        } else if (responsestring == "###" || hashstring == "###") {
 	            hashstring = "";
 	            return false;
 	        }
-				std::cout << response << std::flush;
-	            answer = answer + response;
+				std::cout << responsestring << std::flush;
+	            answer = answer + responsestring;
 	        }
 	            
 	    return true;
@@ -287,13 +288,9 @@ int main(int argc, char* argv[]) {
 
 
     //////////////////////////////////////////////////////////////////////////
-    ////////////           /PROMPT LAMBDA FUNCTIONS               ////////////
+    ////////////         PROMPT TEXT AND GET RESPONSE             ////////////
     //////////////////////////////////////////////////////////////////////////
 
-
-    //Create a prompt_context and copy all params from chatParams to prompt_context
-    llmodel_prompt_context prompt_context;
-    update_struct(prompt_context, params);
     llmodel_setThreadCount(model, params.n_threads);
 
     if (!params.no_interactive) {
@@ -311,16 +308,11 @@ int main(int argc, char* argv[]) {
 
         }
         //answer = response.c_str();
-
         while (!params.run_once) {
-            std::string memory_string = default_prefix;
-            if (params.remember > 1) {
-                memory_string = default_prefix + default_header + input.substr(0, params.remember) + default_footer + answer.substr(0, params.remember);
-            }
             answer = ""; //New prompt. We stored previous answer in memory so clear it.
             input = get_input(con_st, model, input);
             if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
-            llmodel_prompt(model, (memory_string + default_header + input + default_footer).c_str(), 
+            llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(), 
             lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
 

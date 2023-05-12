@@ -62,6 +62,8 @@ void get_params_from_json(chatParams& params) {
         params.n_predict = std::stoi(parsed["n_predict"]);
     if (parsed.find("n_batch") != parsed.end())
         params.n_batch = std::stoi(parsed["n_batch"]);
+    if (parsed.find("n_ctx") != parsed.end())
+        params.n_ctx = std::stoi(parsed["n_ctx"]); 
     if (parsed.find("seed") != parsed.end())
         params.seed = std::stoi(parsed["seed"]);
     if (parsed.find("threads") != parsed.end())
@@ -76,9 +78,7 @@ void get_params_from_json(chatParams& params) {
     if (parsed.find("run-once") != parsed.end())
         params.run_once = stob(removeQuotes(parsed["run-once"]));        
     if (parsed.find("no-animation") != parsed.end())
-        params.use_animation = !stob(removeQuotes(parsed["no-animation"]));            
-    if (parsed.find("remember") != parsed.end())
-        params.remember = std::stoi(parsed["remember"]);
+        params.use_animation = !stob(removeQuotes(parsed["no-animation"]));
         
     if (parsed.find("repeat_penalty") != parsed.end())
         params.repeat_penalty = std::stof(parsed["repeat_penalty"]);

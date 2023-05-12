@@ -134,11 +134,11 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "  --top_k            N  top-k sampling (default: %d)\n", params.top_k);
     fprintf(stderr, "  --top_p            N  top-p sampling (default: %.1f)\n", params.top_p);
     fprintf(stderr, "  --temp             N  temperature (default: %.1f)\n", params.temp);
+    fprintf(stderr, "  --n_ctx            N  number of tokens in context window (default: %.1f)\n", params.temp);
     fprintf(stderr, "  -b N, --batch_size N  batch size for prompt processing (default: %d)\n", params.n_batch);
     fprintf(stderr, "  --repeat_penalty   N  repeat_penalty (default: %.1f)\n", params.repeat_penalty);
-    fprintf(stderr, "  --repeat_last_n    N  repeat_last_n  (default: %d)\n", params.repeat_last_n);
-    fprintf(stderr, "  --context_erase    N  context_erase  (default: %.1f)\n", params.context_erase);
-    fprintf(stderr, "  -r N, --remember   N  number of chars to remember from start of previous answer (default: %d)\n", params.remember);
+    fprintf(stderr, "  --repeat_last_n    N  last n tokens to penalize  (default: %d)\n", params.repeat_last_n);
+    fprintf(stderr, "  --context_erase    N  percent of context to erase  (default: %.1f)\n", params.context_erase);
     fprintf(stderr, "  -j,   --load_json FNAME\n");
     fprintf(stderr, "                        load options instead from json at FNAME (default: empty/no)\n");
     fprintf(stderr, "  --load_template   FNAME\n");
@@ -186,8 +186,8 @@ bool parse_params(int argc, char** argv, chatParams& params) {
             params.temp = static_cast<float>(std::stof(argv[++i]));
         } else if (arg == "-b" || arg == "--batch_size") {
             params.n_batch = static_cast<int32_t>(std::stoi(argv[++i]));
-        } else if (arg == "-r" || arg == "--remember") {
-            params.remember = static_cast<int>(std::stoi(argv[++i]));
+        } else if (arg == "--n_ctx") {
+            params.n_ctx = static_cast<int>(std::stoi(argv[++i]));
         } else if (arg == "--repeat_penalty") {
             params.repeat_penalty = static_cast<float>(std::stof(argv[++i]));
         } else if (arg == "--repeat_last_n") {
