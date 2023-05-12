@@ -148,8 +148,7 @@ And a more detailed one:
 "prompt": "Once upon a time",
 "load_template": "/path/to/prompt_template_sample.txt",
 "model": "/path/to/ggml-gpt4all-j-v1.3-groovy.bin",
-"no-interactive": "true",
-"remember": 200
+"no-interactive": "true"
 }
 ```
 This one loads the prompt from the json, uses a specific template, and runs the program once in no-interactive mode so user does not have to press any input.
