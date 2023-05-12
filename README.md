@@ -1,8 +1,8 @@
-[![CMake](https://github.com/kuvaus/llmodel-chat/actions/workflows/cmake.yml/badge.svg)](https://github.com/kuvaus/llmodel-chat/actions/workflows/cmake.yml)
+[![CMake](https://github.com/kuvaus/LlamaGPTJ-chat/actions/workflows/cmake.yml/badge.svg)](https://github.com/kuvaus/LlamaGPTJ-chat/actions/workflows/cmake.yml)
 # LlamaGPTJ-chat
 Simple command line chat program for [GPT-J](https://en.wikipedia.org/wiki/GPT-J), [LLaMA](https://en.wikipedia.org/wiki/LLaMA) and [MPT](https://www.mosaicml.com/blog/mpt-7b) models written in C++. Based on [llama.cpp](https://github.com/ggerganov/llama.cpp) and uses [gpt4all-backend](https://github.com/nomic-ai/gpt4all) for full compatibility.
 
-<img alt="GPTJ-Chat demo" src="https://user-images.githubusercontent.com/22169537/234323778-64365dc9-8bd9-4a48-b7de-ec0280a5fb4e.gif" width="600" />
+<img alt="LlamaGPTJ-chat demo" src="https://user-images.githubusercontent.com/22169537/234323778-64365dc9-8bd9-4a48-b7de-ec0280a5fb4e.gif" width="600" />
 
 > **Warning**
 > Very early progress, might have bugs
@@ -22,7 +22,7 @@ Simple command line chat program for [GPT-J](https://en.wikipedia.org/wiki/GPT-J
 git clone --recurse-submodules https://github.com/kuvaus/LlamaGPTJ-chat
 cd LlamaGPTJ-chat
 ```
-You need to also download a model file, see [supported models](#usage) for details and links.
+You need to also download a model file, see [supported models](#gpt-j-llama-and-mpt-models) for details and links.
 
 ### Build
 On **Windows** you need to have MinGW or equivalent installed.
@@ -82,7 +82,7 @@ Alternatively you need to download a LLaMA model first. The original weights are
 The LLaMA models are quite large: the 7B parameter versions are around 4.2 Gb and 13B parameter 8.2 Gb each. The chat program stores the model in RAM on runtime so you need enough memory to run. You can get more details on LLaMA models from the [whitepaper](https://arxiv.org/abs/2302.13971) or META AI [website](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/).
 
 ### MPT model
-You need to download a MPT model first. Here are direct links to MPT-7B models:
+You can also download and use an MPT model instead. Here are direct links to MPT-7B models:
 >- MPT-7B base model pre-trained by Mosaic ML: [ggml-mpt-7b-base.bin](https://gpt4all.io/models/ggml-mpt-7b-base.bin)
 >- MPT-7B instruct model trained by Mosaic ML: [ggml-mpt-7b-instruct.bin](https://gpt4all.io/models/ggml-mpt-7b-instruct.bin)
 >- Non-commercial MPT chat model  trained by Mosaic ML: [ggml-mpt-7b-chat.bin](https://gpt4all.io/models/ggml-mpt-7b-chat.bin)
