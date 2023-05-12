@@ -37,22 +37,28 @@
 #include <fcntl.h>
 #include "config.h"
 
-// this contains all the parameters you can import from json or with cli arguments
+
+// chatParams contains all the parameters you can import from json or with cli arguments
+// it also contains the initial value for PromptContext
 struct chatParams {
-        //.logits = NULL,
-        //.logits_size = 0,
-        //.tokens = NULL,
-        //.tokens_size = 4096,
-        //.n_past = 0,
-        //.n_ctx = 1024, 
+        //std::vector<float> logits,          // logits of current context 
+        //std::vector<int32_t> tokens,        // current tokens in the context window 
+        //These are in the prompt context, maybe add as parameters too.    
+        float *logits = NULL;               // logits of current context
+        size_t logits_size = 0;             // the size of the raw logits vector
+        int32_t *tokens = NULL;             // current tokens in the context window
+        size_t tokens_size = 0;             // the size of the raw tokens vector
+        int32_t n_past = 0;                 // number of tokens in past conversation
+        int32_t n_ctx = 0;                  // number of tokens possible in context window
+        // below contains all the parameters you can import from json or with cli arguments
         int32_t n_predict = 50;
         int32_t top_k = 40;
         float top_p = 0.95;
         float temp = 0.28;
         int32_t n_batch = 9;     
         float repeat_penalty = 1.1;
-        int32_t repeat_last_n = 64;
-        float context_erase = 0.75;
+        int32_t repeat_last_n = 64;          // last n tokens to penalize
+        float context_erase = 0.75;          // percent of context to erase if we exceed the context window
 	    int32_t seed = -1; 
     	int32_t n_threads = std::min(4, (int32_t)std::thread::hardware_concurrency()); 
     	std::string model = "./models/ggml-vicuna-13b-1.1-q4_2.bin";
@@ -88,11 +94,8 @@ std::map<std::string, std::string> parse_json_string(const std::string& jsonStri
 std::string removeQuotes(const std::string& input);
 
 //parse_json.h functions
-//void get_params_from_json(LLMParams & params, std::string& prompt, bool& interactive, bool& continuous, int& memory, std::string& prompt_template, std::string& filename);
 void get_params_from_json(chatParams& params);
-//void print_usage(int argc, char** argv, const LLMParams& params, std::string& prompt, int& memory);
 void print_usage(int argc, char** argv, const chatParams& params);
-//bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory);
 bool parse_params(int argc, char** argv, chatParams& params);
 
 #endif

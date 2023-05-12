@@ -51,7 +51,7 @@ void display_loading() {
 }
 
 //////////////////////////////////////////////////////////////////////////
-////////////                    ANIMATION                     ////////////
+////////////                   /ANIMATION                     ////////////
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -60,6 +60,23 @@ void display_loading() {
 ////////////                 LLAMA FUNCTIONS                  ////////////
 //////////////////////////////////////////////////////////////////////////
 
+//recognize and create correct model type automatically using context size
+llmodel_model llmodel_create_model(std::string modelPath) {
+
+    uint32_t magic;
+    llmodel_model model;
+    std::ifstream f(modelPath, std::ios::binary);
+    f.read(reinterpret_cast<char*>(&magic), sizeof(magic));
+
+    if (magic == 0x67676d6c)       { model = llmodel_gptj_create();  }
+    if (magic == 0x67676a74)       { model = llmodel_llama_create(); }
+    if (magic == 0x67676d6d)       { model = llmodel_mpt_create();   }
+    else  {std::cerr << "Model is not of any supported type" << std::endl;}
+    f.close();
+    return model;
+}
+
+//free correct model type automatically using model typeid
 void llmodel_free_model(llmodel_model model) {
 
     LLModelWrapper *wrapper = reinterpret_cast<LLModelWrapper*>(model);
@@ -68,11 +85,16 @@ void llmodel_free_model(llmodel_model model) {
     if (modelTypeInfo == typeid(GPTJ))       { llmodel_gptj_destroy(model);  }
     if (modelTypeInfo == typeid(LLamaModel)) { llmodel_llama_destroy(model); }
     if (modelTypeInfo == typeid(MPT))        { llmodel_mpt_destroy(model);   }
-
 }
 
 void update_struct(llmodel_prompt_context  &prompt_context, chatParams &params){
     // TODO: handle this better
+    prompt_context.logits = params.logits;
+    prompt_context.logits_size = params.logits_size;
+    prompt_context.tokens = params.tokens;
+    prompt_context.tokens_size = params.tokens_size;
+    prompt_context.n_past = params.n_past;
+    prompt_context.n_ctx = params.n_ctx;
     prompt_context.n_predict = params.n_predict;
     prompt_context.top_k = params.top_k;
     prompt_context.top_p = params.top_p;
@@ -82,33 +104,13 @@ void update_struct(llmodel_prompt_context  &prompt_context, chatParams &params){
     prompt_context.repeat_last_n = params.repeat_last_n;  
     prompt_context.context_erase = params.context_erase; 
     }
-
-    // Set up the prompt context
-//llmodel_prompt_context prompt_context;
-
-llmodel_prompt_context prompt_context = {
-        .logits = NULL,
-        .logits_size = 0,
-        .tokens = NULL,
-        .tokens_size = 4096,
-        .n_past = 0,
-        .n_ctx = 1024,
-        .n_predict = 50,
-        .top_k = 40,
-        .top_p = 0.95,
-        .temp = 0.28,
-        .n_batch = 9,
-        .repeat_penalty = 1.1,
-        .repeat_last_n = 64,
-        .context_erase = 0.75
-    };
     
 std::string hashstring ="";
 std::string answer ="";
 
 
 //////////////////////////////////////////////////////////////////////////
-////////////                 LLAMA FUNCTIONS                  ////////////
+////////////                /LLAMA FUNCTIONS                  ////////////
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -138,7 +140,7 @@ std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& in
 
 
 //////////////////////////////////////////////////////////////////////////
-////////////                 CHAT FUNCTIONS                   ////////////
+////////////                /CHAT FUNCTIONS                   ////////////
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -166,8 +168,7 @@ int main(int argc, char* argv[]) {
         std::filesystem::path p(params.model);
         params.model = p.make_preferred().string();
     #endif
-
-    //std::string prompt = "";
+ 
     std::string input = "";
     uint32_t magic;
    
@@ -189,46 +190,28 @@ int main(int argc, char* argv[]) {
     auto future = std::async(std::launch::async, display_loading);
 
     //handle stderr for now
-    //this is just to prevent unnecessary details during model loading.
+    //this is just to prevent printing unnecessary details during model loading.
     int stderr_copy = dup(fileno(stderr));
     #ifdef _WIN32
-        //disabled for windows for now. The line below needs MinGW support.
         std::freopen("NUL", "w", stderr);
     #else
         std::freopen("/dev/null", "w", stderr);
     #endif
- 
 
-    llmodel_model model;
 
-    //Load the model. The magic value checks if the model type is GPTJ, MPT, or LlaMa
-    std::ifstream f(params.model.c_str(), std::ios::binary);
-    //uint32_t magic;
-    f.read(reinterpret_cast<char*>(&magic), sizeof(magic));
-    // Create model
-    if (magic == 0x67676d6c) {
-        f.close();
-        model = llmodel_gptj_create();
-    } else if (magic == 0x67676d6d) {
-        f.close();
-        model = llmodel_mpt_create();
-    } else if (magic == 0x67676a74) {
-        f.close();
-        model = llmodel_llama_create();
-    } else {
-    	f.close();
-    	std::cerr << "Error loading: " << params.model.c_str() << std::endl;
-    	std::cerr << "Model is not of any supported type" << std::endl;
-    }
+    llmodel_model model = llmodel_create_model(params.model.c_str());
     std::cout << "\r" << appname << ": loading " << params.model.c_str()  << std::endl;
     
-    auto check_model = llmodel_loadModel(model, params.model.c_str());
-
 
     //bring back stderr for now
     dup2(stderr_copy, fileno(stderr));
     close(stderr_copy);
     
+    
+
+    //check if model is loaded
+    auto check_model = llmodel_loadModel(model, params.model.c_str());
+
     if (check_model == false) {
         stop_display = true;
         future.wait();
@@ -254,6 +237,7 @@ int main(int argc, char* argv[]) {
     std::string default_header = "\n### Prompt: ";
     std::string default_footer = "\n### Response: ";
     
+    //load prompt template from file instead
     if (params.load_template != "") {
         std::tie(default_prefix, default_header, default_footer) = read_prompt_template_file(params.load_template);
     }
@@ -303,13 +287,13 @@ int main(int argc, char* argv[]) {
 
 
     //////////////////////////////////////////////////////////////////////////
-    ////////////            PROMPT LAMBDA FUNCTIONS               ////////////
+    ////////////           /PROMPT LAMBDA FUNCTIONS               ////////////
     //////////////////////////////////////////////////////////////////////////
 
 
+    //Create a prompt_context and copy all params from chatParams to prompt_context
+    llmodel_prompt_context prompt_context;
     update_struct(prompt_context, params);
-    
-    
     llmodel_setThreadCount(model, params.n_threads);
 
     if (!params.no_interactive) {

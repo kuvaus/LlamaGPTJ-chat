@@ -18,7 +18,7 @@ bool containsSubstring(const std::string &str, const std::string &substr) {
 ////////////            READ PROMPT TEMPLATE FILE             ////////////
 //////////////////////////////////////////////////////////////////////////
 
-//This is a bit of a messy function but it should parse the template file into header, prompt and footer.
+//This is a bit messy function but it should parse the template file into header, prompt, and footer.
 std::tuple<std::string, std::string, std::string> read_prompt_template_file(const std::string& file_path) {
     std::string prompt, header, footer;
     std::ifstream file(file_path);
@@ -48,7 +48,7 @@ std::tuple<std::string, std::string, std::string> read_prompt_template_file(cons
     //If there is only 1 line above %1, that will be ### prompt.
     if (input_index == 1) {
         prompt = lines[0];
-        header = "";
+        header = " ";
     } else {
         
         //Put lines above the prompt-line into header.
@@ -73,7 +73,7 @@ std::tuple<std::string, std::string, std::string> read_prompt_template_file(cons
 
 
 //////////////////////////////////////////////////////////////////////////
-////////////            READ PROMPT TEMPLATE FILE             ////////////
+////////////           /READ PROMPT TEMPLATE FILE             ////////////
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -115,7 +115,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     // Print usage information
     fprintf(stderr, "usage: %s [options]\n", argv[0]);
     fprintf(stderr, "\n");
-    fprintf(stderr, "A simple chat program for LLaMA and GPT-J based models.\n");
+    fprintf(stderr, "A simple chat program for GPT-J, LLaMA, and MPT models.\n");
     fprintf(stderr, "You can set specific initial prompt with the -p flag.\n");
     fprintf(stderr, "Runs default in interactive and continuous mode.\n");
     fprintf(stderr, "Type 'quit', 'exit' or, 'Ctrl+C' to quit.\n");
@@ -148,9 +148,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "\n");
 }
 
-//bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory, std::string& prompt_template) {
-bool parse_params(int argc, char** argv, chatParams& params) {
-    std::string json_filename = "";
+bool parse_params(int argc, char** argv, chatParams& params) { 
 
     // Parse command-line arguments
     for (int i = 1; i < argc; i++) {
@@ -158,7 +156,7 @@ bool parse_params(int argc, char** argv, chatParams& params) {
 
         if (arg == "-j" || arg == "--load_json") {
             params.load_json = argv[++i];
-            if (!json_filename.empty()) {
+            if (!params.load_json.empty()) {
                 std::cout << appname << ": parsing options from json: " << params.load_json << std::endl;
                 get_params_from_json(params);
             } else {
