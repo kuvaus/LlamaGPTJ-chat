@@ -125,6 +125,7 @@ void print_usage(int argc, char** argv, const LLMParams& params, std::string& pr
     fprintf(stderr, "  -h, --help            show this help message and exit\n");
     fprintf(stderr, "  --run-once            disable continuous mode\n");
     fprintf(stderr, "  --no-interactive      disable interactive mode altogether (uses given prompt only)\n");
+    fprintf(stderr, "  --no-animation        disable chat animation\n");
     fprintf(stderr, "  -s SEED, --seed SEED  RNG seed (default: -1)\n");
     fprintf(stderr, "  -t N, --threads N     number of threads to use during computation (default: %d)\n", params.n_threads);
     fprintf(stderr, "  -p PROMPT, --prompt PROMPT\n");
@@ -144,7 +145,7 @@ void print_usage(int argc, char** argv, const LLMParams& params, std::string& pr
     fprintf(stderr, "                        model path (current: %s)\n", params.model.c_str());
     fprintf(stderr, "\n");
 }
-bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory, std::string& prompt_template) {
+bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory, bool& use_animation, std::string& prompt_template) {
     std::string json_filename = "";
 
     // Parse command-line arguments
@@ -163,6 +164,8 @@ bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt,
             continuous = false;
         } else if (arg == "--no-interactive") {
             interactive = false;
+        } else if (arg == "--no-animation") {
+            use_animation = false;
         } else if (arg == "-s" || arg == "--seed") {
             params.seed = static_cast<int32_t>(std::stoi(argv[++i]));
         } else if (arg == "-t" || arg == "--threads") {
