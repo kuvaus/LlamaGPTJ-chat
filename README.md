@@ -117,7 +117,7 @@ options:
   --top_k            N  top-k sampling (default: 40)
   --top_p            N  top-p sampling (default: 0.9)
   --temp             N  temperature (default: 0.9)
-  --n_ctx            N  number of tokens in context window (default: 0.9)
+  --n_ctx            N  number of tokens in context window (default: 0)
   -b N, --batch_size N  batch size for prompt processing (default: 20)
   --repeat_penalty   N  repeat_penalty (default: 1.1)
   --repeat_last_n    N  last n tokens to penalize  (default: 64)
