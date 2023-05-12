@@ -85,7 +85,7 @@ The LLaMA models are quite large: the 7B parameter versions are around 4.2 Gb an
 You can also download and use an MPT model instead. Here are direct links to MPT-7B models:
 >- MPT-7B base model pre-trained by Mosaic ML: [ggml-mpt-7b-base.bin](https://gpt4all.io/models/ggml-mpt-7b-base.bin)
 >- MPT-7B instruct model trained by Mosaic ML: [ggml-mpt-7b-instruct.bin](https://gpt4all.io/models/ggml-mpt-7b-instruct.bin)
->- Non-commercial MPT chat model  trained by Mosaic ML: [ggml-mpt-7b-chat.bin](https://gpt4all.io/models/ggml-mpt-7b-chat.bin)
+>- Non-commercial MPT-7B chat model  trained by Mosaic ML: [ggml-mpt-7b-chat.bin](https://gpt4all.io/models/ggml-mpt-7b-chat.bin)
 
 They're around 4.9 Gb each. The chat program stores the model in RAM on runtime so you need enough memory to run. You can get more details on MPT models from MosaicML [website](https://www.mosaicml.com/blog/mpt-7b) or [mosaicml/llm-foundry](https://github.com/mosaicml/llm-foundry) github.
 
