@@ -180,6 +180,7 @@ int main(int argc, char* argv[]) {
 
     bool interactive = true;
     bool continuous = true;
+    bool use_animation = true;
 
     std::string response;
     response.reserve(10000);
@@ -210,7 +211,7 @@ int main(int argc, char* argv[]) {
     set_console_color(con_st, DEFAULT);
     std::cout << "" << std::endl;
     
-    parse_params(argc, argv, params, prompt, interactive, continuous, memory, prompt_template);
+    parse_params(argc, argv, params, prompt, interactive, continuous, memory, use_animation, prompt_template);
 
 
 
@@ -231,7 +232,6 @@ int main(int argc, char* argv[]) {
 
 
     llmodel_model model;
-    bool use_animation = true;
 
     //Load the model. The magic value checks if the model type is GPTJ or LlaMa
     std::ifstream f(params.model.c_str(), std::ios::binary);
