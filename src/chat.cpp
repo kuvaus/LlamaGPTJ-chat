@@ -321,7 +321,7 @@ int main(int argc, char* argv[]) {
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
             //answer = response.c_str();
         }
-    //No-interactive get the answer once from prompt and print it.
+    //No-interactive mode. Get the answer once from prompt and print it.
     } else {
         if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
         llmodel_prompt(model, (default_prefix + default_header + params.prompt + default_footer).c_str(), 
