@@ -52,7 +52,7 @@ struct chatParams {
         int32_t n_past = 0;                 // number of tokens in past conversation
         //Parameters below you can import from json or with cli arguments
         int32_t n_ctx = 0;                  // number of tokens possible in context window
-        int32_t n_predict = 50;
+        int32_t n_predict = 200;
         int32_t top_k = 40;
         float top_p = 0.95;
         float temp = 0.28;
