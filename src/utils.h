@@ -111,8 +111,7 @@ std::string random_prompt(int32_t seed) {
     return prompts[rng() % prompts.size()];
 }
 
-
-void print_usage(int argc, char** argv, const LLMParams& params, std::string& prompt, int& memory, std::string& prompt_template) {
+void print_usage(int argc, char** argv, const chatParams& params) {
     // Print usage information
     fprintf(stderr, "usage: %s [options]\n", argv[0]);
     fprintf(stderr, "\n");
@@ -127,16 +126,19 @@ void print_usage(int argc, char** argv, const LLMParams& params, std::string& pr
     fprintf(stderr, "  --no-interactive      disable interactive mode altogether (uses given prompt only)\n");
     fprintf(stderr, "  --no-animation        disable chat animation\n");
     fprintf(stderr, "  -s SEED, --seed SEED  RNG seed (default: -1)\n");
-    fprintf(stderr, "  -t N, --threads N     number of threads to use during computation (default: %d)\n", params.n_threads);
+    fprintf(stderr, "  -t N, --threads    N  number of threads to use during computation (default: %d)\n", params.n_threads);
     fprintf(stderr, "  -p PROMPT, --prompt PROMPT\n");
     fprintf(stderr, "                        prompt to start generation with (default: empty)\n");
     fprintf(stderr, "  --random-prompt       start with a randomized prompt.\n");
-    fprintf(stderr, "  -n N, --n_predict N   number of tokens to predict (default: %d)\n", params.n_predict);
-    fprintf(stderr, "  --top_k N             top-k sampling (default: %d)\n", params.top_k);
-    fprintf(stderr, "  --top_p N             top-p sampling (default: %.1f)\n", params.top_p);
-    fprintf(stderr, "  --temp N              temperature (default: %.1f)\n", params.temp);
+    fprintf(stderr, "  -n N, --n_predict  N  number of tokens to predict (default: %d)\n", params.n_predict);
+    fprintf(stderr, "  --top_k            N  top-k sampling (default: %d)\n", params.top_k);
+    fprintf(stderr, "  --top_p            N  top-p sampling (default: %.1f)\n", params.top_p);
+    fprintf(stderr, "  --temp             N  temperature (default: %.1f)\n", params.temp);
     fprintf(stderr, "  -b N, --batch_size N  batch size for prompt processing (default: %d)\n", params.n_batch);
-    fprintf(stderr, "  -r N, --remember N    number of chars to remember from start of previous answer (default: %d)\n", memory);
+    fprintf(stderr, "  --repeat_penalty   N  repeat_penalty (default: %.1f)\n", params.repeat_penalty);
+    fprintf(stderr, "  --repeat_last_n    N  repeat_last_n  (default: %d)\n", params.repeat_last_n);
+    fprintf(stderr, "  --context_erase    N  context_erase  (default: %.1f)\n", params.context_erase);
+    fprintf(stderr, "  -r N, --remember   N  number of chars to remember from start of previous answer (default: %d)\n", params.remember);
     fprintf(stderr, "  -j,   --load_json FNAME\n");
     fprintf(stderr, "                        load options instead from json at FNAME (default: empty/no)\n");
     fprintf(stderr, "  --load_template   FNAME\n");
@@ -145,35 +147,37 @@ void print_usage(int argc, char** argv, const LLMParams& params, std::string& pr
     fprintf(stderr, "                        model path (current: %s)\n", params.model.c_str());
     fprintf(stderr, "\n");
 }
-bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory, bool& use_animation, std::string& prompt_template) {
+
+//bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt, bool& interactive, bool& continuous, int& memory, std::string& prompt_template) {
+bool parse_params(int argc, char** argv, chatParams& params) {
     std::string json_filename = "";
 
     // Parse command-line arguments
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
 
-        if (arg == "-j" || arg == "--json_load") {
-            json_filename = argv[++i];
+        if (arg == "-j" || arg == "--load_json") {
+            params.load_json = argv[++i];
             if (!json_filename.empty()) {
-                std::cout << "LlamaGPTJ-chat: parsing options from json: " << json_filename << std::endl;
-                get_params_from_json(params, prompt, interactive, continuous, memory, prompt_template, json_filename);
+                std::cout << appname << ": parsing options from json: " << params.load_json << std::endl;
+                get_params_from_json(params);
             } else {
-                std::cout << "LlamaGPTJ-chat: trying to parse options from json but got empty filename." << std::endl;
+                std::cout << appname << ": trying to parse options from json but got empty filename." << std::endl;
             }
         } else if (arg == "--run-once") {
-            continuous = false;
+            params.run_once = true;
         } else if (arg == "--no-interactive") {
-            interactive = false;
+            params.no_interactive = true;
         } else if (arg == "--no-animation") {
-            use_animation = false;
+            params.use_animation = false;
         } else if (arg == "-s" || arg == "--seed") {
             params.seed = static_cast<int32_t>(std::stoi(argv[++i]));
         } else if (arg == "-t" || arg == "--threads") {
             params.n_threads = static_cast<int32_t>(std::stoi(argv[++i]));
         } else if (arg == "-p" || arg == "--prompt") {
-            prompt = argv[++i];
+            params.prompt = argv[++i];
         } else if (arg == "--random-prompt") {
-            prompt = random_prompt(params.seed);
+            params.prompt = random_prompt(params.seed);
         } else if (arg == "-n" || arg == "--n_predict") {
             params.n_predict = static_cast<int32_t>(std::stoi(argv[++i]));
         } else if (arg == "--top_k") {
@@ -185,17 +189,23 @@ bool parse_params(int argc, char** argv, LLMParams& params, std::string& prompt,
         } else if (arg == "-b" || arg == "--batch_size") {
             params.n_batch = static_cast<int32_t>(std::stoi(argv[++i]));
         } else if (arg == "-r" || arg == "--remember") {
-            memory = static_cast<int>(std::stoi(argv[++i]));
+            params.remember = static_cast<int>(std::stoi(argv[++i]));
+        } else if (arg == "--repeat_penalty") {
+            params.repeat_penalty = static_cast<float>(std::stof(argv[++i]));
+        } else if (arg == "--repeat_last_n") {
+            params.repeat_last_n = static_cast<int>(std::stoi(argv[++i]));
+        } else if (arg == "--context_erase") {
+            params.context_erase = static_cast<float>(std::stof(argv[++i]));
         } else if (arg == "--load_template") {
-            prompt_template = argv[++i];
+            params.load_template = argv[++i];
         } else if (arg == "-m" || arg == "--model") {
             params.model = argv[++i];
         } else if (arg == "-h" || arg == "--help") {
-            print_usage(argc, argv, params, prompt, memory, prompt_template);
+            print_usage(argc, argv, params);
             exit(0);
         } else {
             fprintf(stderr, "error: unknown argument: %s\n", arg.c_str());
-            print_usage(argc, argv, params, prompt, memory, prompt_template);
+            print_usage(argc, argv, params);
             exit(0);
         }
     }

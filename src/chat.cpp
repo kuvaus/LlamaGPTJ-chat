@@ -1,10 +1,10 @@
 #include "./header.h"
 
-#include "../llmodel/llmodel.h"
-#include "../llmodel/llmodel_c.h"
-#include "../llmodel/llmodel_c.cpp"
-#include "../llmodel/llamamodel.h" 
-#include "../llmodel/gptj.h" 
+#include "../gpt4all-backend/llmodel.h"
+#include "../gpt4all-backend/llmodel_c.h"
+#include "../gpt4all-backend/llmodel_c.cpp"
+#include "../gpt4all-backend/llamamodel.h" 
+#include "../gpt4all-backend/gptj.h" 
 #include "./utils.h"
 #include "./parse_json.h"
 
@@ -30,8 +30,6 @@ void display_frames() {
             std::cerr << "\r" << std::flush;
         }
     }
-    //std::cout << "\r" << " " << std::flush;
-    //std::cout << "\r" << std::flush;
 }
 
 void display_loading() {
@@ -52,7 +50,6 @@ void display_loading() {
 
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 ////////////                    ANIMATION                     ////////////
 //////////////////////////////////////////////////////////////////////////
@@ -63,36 +60,27 @@ void display_loading() {
 ////////////                 LLAMA FUNCTIONS                  ////////////
 //////////////////////////////////////////////////////////////////////////
 
-std::string llmodel_getModelType(llmodel_model model)
-{
+void llmodel_free_model(llmodel_model model) {
+
     LLModelWrapper *wrapper = reinterpret_cast<LLModelWrapper*>(model);
     const std::type_info &modelTypeInfo = typeid(*wrapper->llModel);
 
-    if (modelTypeInfo == typeid(GPTJ))
-    {
-        return "GPTJ";
-    }
-    else if (modelTypeInfo == typeid(LLamaModel))
-    {
-        return "LLamaModel";
-    }
-    else
-    {
-        return "Unknown";
-    }
+    if (modelTypeInfo == typeid(GPTJ))       { llmodel_gptj_destroy(model);  }
+    if (modelTypeInfo == typeid(LLamaModel)) { llmodel_llama_destroy(model); }
+    if (modelTypeInfo == typeid(MPT))        { llmodel_mpt_destroy(model);   }
+
 }
 
-void update_struct(llmodel_prompt_context  &prompt_context, LLMParams &params){
+void update_struct(llmodel_prompt_context  &prompt_context, chatParams &params){
     // TODO: handle this better
     prompt_context.n_predict = params.n_predict;
     prompt_context.top_k = params.top_k;
     prompt_context.top_p = params.top_p;
     prompt_context.temp = params.temp;
     prompt_context.n_batch = params.n_batch;
-
-    prompt_context.repeat_penalty = 1.10f;  
-    prompt_context.repeat_last_n = 64;  
-    prompt_context.context_erase = 0.75f; 
+    prompt_context.repeat_penalty = params.repeat_penalty;  
+    prompt_context.repeat_last_n = params.repeat_last_n;  
+    prompt_context.context_erase = params.context_erase; 
     }
 
     // Set up the prompt context
@@ -114,8 +102,6 @@ llmodel_prompt_context prompt_context = {
         .repeat_last_n = 64,
         .context_erase = 0.75
     };
-    
-
     
 std::string hashstring ="";
 std::string answer ="";
@@ -142,17 +128,8 @@ std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& in
     std::getline(std::cin, input);
     set_console_color(con_st, DEFAULT);
 
-    if (input == "exit" || input == "quit") {
-        
-            
-        std::string check_model_type = llmodel_getModelType(model);
-        if (check_model_type == "LLamaModel") {
-            llmodel_llama_destroy(model);
-        }
-        if (check_model_type == "GPTJ") {
-            llmodel_gptj_destroy(model);
-        }
-        
+    if (input == "exit" || input == "quit") {       
+        llmodel_free_model(model);
         exit(0);
     }
 
@@ -178,16 +155,10 @@ int main(int argc, char* argv[]) {
     con_st.use_color = true;
     set_console_color(con_st, DEFAULT);
 
-    bool interactive = true;
-    bool continuous = true;
-    bool use_animation = true;
-
     std::string response;
     response.reserve(10000);
     answer.reserve(10000);
-    int memory = 200;
-    std::string prompt_template = "";
-    LLMParams params;
+    chatParams params;
     
 
     //convert the default model path into Windows format if on WIN32
@@ -196,22 +167,21 @@ int main(int argc, char* argv[]) {
         params.model = p.make_preferred().string();
     #endif
 
-    std::string prompt = "";
+    //std::string prompt = "";
     std::string input = "";
-    //std::string answer = "";
     uint32_t magic;
    
 
     set_console_color(con_st, PROMPT);
     set_console_color(con_st, BOLD);
-    std::cout << "LlamaGPTJ-chat";
+    std::cout << appname;
     set_console_color(con_st, DEFAULT);
     set_console_color(con_st, PROMPT);
     std::cout << " (v. " << VERSION << ")";
     set_console_color(con_st, DEFAULT);
     std::cout << "" << std::endl;
     
-    parse_params(argc, argv, params, prompt, interactive, continuous, memory, use_animation, prompt_template);
+    parse_params(argc, argv, params);
 
 
 
@@ -227,13 +197,11 @@ int main(int argc, char* argv[]) {
     #else
         std::freopen("/dev/null", "w", stderr);
     #endif
-
-
-
+ 
 
     llmodel_model model;
 
-    //Load the model. The magic value checks if the model type is GPTJ or LlaMa
+    //Load the model. The magic value checks if the model type is GPTJ, MPT, or LlaMa
     std::ifstream f(params.model.c_str(), std::ios::binary);
     //uint32_t magic;
     f.read(reinterpret_cast<char*>(&magic), sizeof(magic));
@@ -241,16 +209,20 @@ int main(int argc, char* argv[]) {
     if (magic == 0x67676d6c) {
         f.close();
         model = llmodel_gptj_create();
-    } else {
+    } else if (magic == 0x67676d6d) {
+        f.close();
+        model = llmodel_mpt_create();
+    } else if (magic == 0x67676a74) {
         f.close();
         model = llmodel_llama_create();
+    } else {
+    	f.close();
+    	std::cerr << "Error loading: " << params.model.c_str() << std::endl;
+    	std::cerr << "Model is not of any supported type" << std::endl;
     }
-
-
-    std::cout << "\r" << "LlamaGPTJ-chat: loading " << params.model.c_str()  << std::endl;
+    std::cout << "\r" << appname << ": loading " << params.model.c_str()  << std::endl;
     
     auto check_model = llmodel_loadModel(model, params.model.c_str());
-    //std::cout << "Model type: " << llmodel_getModelType(model) << std::endl;
 
 
     //bring back stderr for now
@@ -270,21 +242,20 @@ int main(int argc, char* argv[]) {
         stop_display = true;
         future.wait();
         stop_display= false;
-        std::cout << "\r" << "LlamaGPTJ-chat: done loading!" << std::flush;   
+        std::cout << "\r" << appname << ": done loading!" << std::flush;   
     }
 
     set_console_color(con_st, PROMPT);
-    std::cout << "\n" << prompt.c_str() << std::endl;
+    std::cout << "\n" << params.prompt.c_str() << std::endl;
     set_console_color(con_st, DEFAULT);
 
-    //default prompt template, should work with most LlaMa and GPTJ models
+    //default prompt template, should work with most instruction-type models
     std::string default_prefix = "### Instruction:\n The prompt below is a question to answer, a task to complete, or a conversation to respond to; decide which and write an appropriate response.";
     std::string default_header = "\n### Prompt: ";
     std::string default_footer = "\n### Response: ";
-
-    //load prompt template from a file instead
-    if (prompt_template != "") {
-        std::tie(default_prefix, default_header, default_footer) = read_prompt_template_file(prompt_template);
+    
+    if (params.load_template != "") {
+        std::tie(default_prefix, default_header, default_footer) = read_prompt_template_file(params.load_template);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -294,8 +265,6 @@ int main(int argc, char* argv[]) {
 
     auto lambda_prompt = [](int32_t token_id, const char *promptchars)  {
 	        // You can handle prompt here if needed
-	        //std::cout << token_id << std::flush;
-	        //std::cout << promptchars << std::flush;
 	        return true;
 	    };
 
@@ -343,41 +312,41 @@ int main(int argc, char* argv[]) {
     
     llmodel_setThreadCount(model, params.n_threads);
 
-    if (interactive) {
+    if (!params.no_interactive) {
         input = get_input(con_st, model, input);
-        if (prompt != "") {
-            if (use_animation){ future = std::async(std::launch::async, display_frames); }
-            llmodel_prompt(model, (default_prefix + default_header + prompt + " " + input + default_footer).c_str(),
+        if (params.prompt != "") {
+            if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
+            llmodel_prompt(model, (default_prefix + default_header + params.prompt + " " + input + default_footer).c_str(),
             lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
-            if (use_animation){ stop_display = true; future.wait(); stop_display = false; }
+            if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
         } else {
-            if (use_animation){ future = std::async(std::launch::async, display_frames); }
+            if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(),
             lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
-            if (use_animation){ stop_display = true; future.wait(); stop_display = false; }
+            if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
 
         }
         //answer = response.c_str();
 
-        while (continuous) {
+        while (!params.run_once) {
             std::string memory_string = default_prefix;
-            if (memory > 1) {
-                memory_string = default_prefix + default_header + input.substr(0, memory) + default_footer + answer.substr(0, memory);
+            if (params.remember > 1) {
+                memory_string = default_prefix + default_header + input.substr(0, params.remember) + default_footer + answer.substr(0, params.remember);
             }
             answer = ""; //New prompt. We stored previous answer in memory so clear it.
             input = get_input(con_st, model, input);
-            if (use_animation){ future = std::async(std::launch::async, display_frames); }
+            if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (memory_string + default_header + input + default_footer).c_str(), 
             lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
-            if (use_animation){ stop_display = true; future.wait(); stop_display = false; }
+            if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
 
             //answer = response.c_str();
         }
     } else {
-        if (use_animation){ future = std::async(std::launch::async, display_frames); }
-        llmodel_prompt(model, (default_prefix + default_header + prompt + default_footer).c_str(), 
+        if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
+        llmodel_prompt(model, (default_prefix + default_header + params.prompt + default_footer).c_str(), 
         lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
-        if (use_animation){ stop_display = true; future.wait(); stop_display = false; }
+        if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
 
     }
 
@@ -385,14 +354,6 @@ int main(int argc, char* argv[]) {
 
 
     set_console_color(con_st, DEFAULT);
-
-    std::string check_model_type = llmodel_getModelType(model);
-    if (check_model_type == "LLamaModel") {
-        llmodel_llama_destroy(model);
-    }
-    if (check_model_type == "GPTJ") {
-        llmodel_gptj_destroy(model);
-    }
-
+    llmodel_free_model(model);
     return 0;
 }

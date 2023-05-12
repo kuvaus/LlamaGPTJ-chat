@@ -49,8 +49,8 @@ std::string removeQuotes(const std::string& input) {
     return result;
 }
 
-void get_params_from_json(LLMParams & params, std::string& prompt, bool& interactive, bool& continuous, int& memory, std::string& prompt_template, std::string& filename) {
-    std::map<std::string, std::string> parsed = parse_json_string(readFile(filename));
+void get_params_from_json(chatParams& params) {
+    std::map<std::string, std::string> parsed = parse_json_string(readFile(params.load_json));
 
     if (parsed.find("top_p") != parsed.end())
         params.top_p = std::stof(parsed["top_p"]);
@@ -70,15 +70,24 @@ void get_params_from_json(LLMParams & params, std::string& prompt, bool& interac
         params.model = removeQuotes(parsed["model"]);
 
     if (parsed.find("prompt") != parsed.end())
-        prompt = removeQuotes(parsed["prompt"]);
+        params.prompt = removeQuotes(parsed["prompt"]);
     if (parsed.find("no-interactive") != parsed.end())
-        interactive = !stob(removeQuotes(parsed["no-interactive"]));        
-    if (parsed.find("load_template") != parsed.end())
-        prompt_template = removeQuotes(parsed["load_template"]);        
+        params.no_interactive = stob(removeQuotes(parsed["no-interactive"]));    
     if (parsed.find("run-once") != parsed.end())
-        continuous = !stob(removeQuotes(parsed["run-once"]));        
+        params.run_once = stob(removeQuotes(parsed["run-once"]));        
+    if (parsed.find("no-animation") != parsed.end())
+        params.use_animation = !stob(removeQuotes(parsed["no-animation"]));            
     if (parsed.find("remember") != parsed.end())
-        memory = std::stoi(parsed["remember"]);
+        params.remember = std::stoi(parsed["remember"]);
+        
+    if (parsed.find("repeat_penalty") != parsed.end())
+        params.repeat_penalty = std::stof(parsed["repeat_penalty"]);
+    if (parsed.find("repeat_last_n") != parsed.end())
+        params.repeat_last_n = std::stoi(parsed["repeat_last_n"]);
+    if (parsed.find("context_erase") != parsed.end())
+        params.context_erase = std::stof(parsed["context_erase"]);        
+    if (parsed.find("load_template") != parsed.end())
+        params.load_template = removeQuotes(parsed["load_template"]);    
 }
 
 

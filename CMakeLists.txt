@@ -12,7 +12,7 @@ project(LlamaGPTJ-chat)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
-set(VERSION_PATCH 7)
+set(VERSION_PATCH 8)
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS "on")
@@ -94,6 +94,6 @@ configure_file(
 # Include the binary directory for the generated header file
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
-add_subdirectory(llmodel/llama.cpp)
-add_subdirectory(llmodel)
+add_subdirectory(gpt4all-backend/llama.cpp)
+add_subdirectory(gpt4all-backend)
 add_subdirectory(src)
