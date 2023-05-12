@@ -267,7 +267,7 @@ int main(int argc, char* argv[]) {
                 std::cerr << "\r" << std::flush;
             }
 	        // handle ### token separately
-            // this might not be needed in the fuure
+            // this might not be needed in the future
 	        if (responsestring == "#" || responsestring == "##") {
 	            hashstring += responsestring;
 	        } else if (responsestring == "###" || hashstring == "###") {
