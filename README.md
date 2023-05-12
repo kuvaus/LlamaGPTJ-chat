@@ -113,7 +113,7 @@ options:
   -p PROMPT, --prompt PROMPT
                         prompt to start generation with (default: empty)
   --random-prompt       start with a randomized prompt.
-  -n N, --n_predict  N  number of tokens to predict (default: 50)
+  -n N, --n_predict  N  number of tokens to predict (default: 200)
   --top_k            N  top-k sampling (default: 40)
   --top_p            N  top-p sampling (default: 0.9)
   --temp             N  temperature (default: 0.9)
