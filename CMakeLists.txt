@@ -1,12 +1,15 @@
 cmake_minimum_required (VERSION 3.2)
 
 if(APPLE)
-  # Build a Universal binary on macOS
-  set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
-  # Checks if older than Big Sur to possibly support ARM
-  #if(CMAKE_HOST_SYSTEM_VERSION VERSION_LESS 20)
-  #  set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "" FORCE)
-  #endif()
+  option(BUILD_UNIVERSAL "Build a Universal binary on macOS" ON)
+  if(BUILD_UNIVERSAL)
+    # Build a Universal binary on macOS
+    # This requires that the found Qt library is compiled as Universal binaries.
+    set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
+  else()
+    # Build for the host architecture on macOS
+    set(CMAKE_OSX_ARCHITECTURES "${CMAKE_HOST_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE)
+  endif()
 endif()
 
 project(LlamaGPTJ-chat)
