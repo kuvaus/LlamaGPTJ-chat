@@ -4,9 +4,9 @@ if(APPLE)
   # Build a Universal binary on macOS
   set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
   # Checks if older than Big Sur to possibly support ARM
-  if(CMAKE_HOST_SYSTEM_VERSION VERSION_LESS 20)
-    set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "" FORCE)
-  endif()
+  #if(CMAKE_HOST_SYSTEM_VERSION VERSION_LESS 20)
+  #  set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "" FORCE)
+  #endif()
 endif()
 
 project(LlamaGPTJ-chat)
