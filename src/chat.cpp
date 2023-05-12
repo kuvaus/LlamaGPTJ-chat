@@ -248,13 +248,13 @@ int main(int argc, char* argv[]) {
     //////////////////////////////////////////////////////////////////////////
 
 
-    auto lambda_prompt = [](int32_t token_id, const char *promptchars)  {
+    auto prompt_callback = [](int32_t token_id, const char *promptchars)  {
 	        // You can handle prompt here if needed
 	        return true;
 	    };
 
 
-    auto lambda_response = [](int32_t token_id, const char *responsechars) {
+    auto response_callback = [](int32_t token_id, const char *responsechars) {
     
             std::string responsestring(responsechars);
 	
@@ -281,7 +281,7 @@ int main(int argc, char* argv[]) {
 	    return true;
 	};
 	
-	auto lambda_recalculate = [](bool is_recalculating) {
+	auto recalculate_callback = [](bool is_recalculating) {
 	        // You can handle recalculation requests here if needed
 	    return is_recalculating;
 	};
@@ -293,40 +293,42 @@ int main(int argc, char* argv[]) {
 
     llmodel_setThreadCount(model, params.n_threads);
 
+    //main chat loop.
     if (!params.no_interactive) {
         input = get_input(con_st, model, input);
+        //Interactive mode. We have a prompt.
         if (params.prompt != "") {
             if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + params.prompt + " " + input + default_footer).c_str(),
-            lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
+            prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
+        //Interactive mode. Else get prompt from input.
         } else {
             if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(),
-            lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
+            prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
 
         }
+        //Interactive and continuous mode. Get prompt from input.
         //answer = response.c_str();
         while (!params.run_once) {
             answer = ""; //New prompt. We stored previous answer in memory so clear it.
             input = get_input(con_st, model, input);
             if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(), 
-            lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
+            prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
-
             //answer = response.c_str();
         }
+    //No-interactive get the answer once from prompt and print it.
     } else {
         if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
         llmodel_prompt(model, (default_prefix + default_header + params.prompt + default_footer).c_str(), 
-        lambda_prompt, lambda_response, lambda_recalculate, &prompt_context);
+        prompt_callback, response_callback, recalculate_callback, &prompt_context);
         if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
 
     }
-
-
 
 
     set_console_color(con_st, DEFAULT);

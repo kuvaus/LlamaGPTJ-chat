@@ -43,13 +43,14 @@
 struct chatParams {
         //std::vector<float> logits,          // logits of current context 
         //std::vector<int32_t> tokens,        // current tokens in the context window 
+
         //These are in the prompt context, maybe add as parameters too.    
         float *logits = NULL;               // logits of current context
         size_t logits_size = 0;             // the size of the raw logits vector
         int32_t *tokens = NULL;             // current tokens in the context window
         size_t tokens_size = 0;             // the size of the raw tokens vector
         int32_t n_past = 0;                 // number of tokens in past conversation
-        // below contains all the parameters you can import from json or with cli arguments
+        // parameters below contains you can import from json or with cli arguments
         int32_t n_ctx = 0;                  // number of tokens possible in context window
         int32_t n_predict = 50;
         int32_t top_k = 40;
@@ -59,10 +60,12 @@ struct chatParams {
         float repeat_penalty = 1.1;
         int32_t repeat_last_n = 64;          // last n tokens to penalize
         float context_erase = 0.75;          // percent of context to erase if we exceed the context window
+        //parameters below are not inside prompt_context, but handled separately
 	    int32_t seed = -1; 
     	int32_t n_threads = std::min(4, (int32_t)std::thread::hardware_concurrency()); 
     	std::string model = "./models/ggml-vicuna-13b-1.1-q4_2.bin";
 		std::string prompt = "";
+        //you can toggle interactivity with these parameters
 		bool no_interactive = false;
 		bool use_animation = true;
 		std::string load_template = ""; //template file location
