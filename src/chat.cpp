@@ -1,10 +1,10 @@
 #include "./header.h"
 
-#include "../gpt4all-backend/llmodel.h"
+//#include "../gpt4all-backend/llmodel.h"
 #include "../gpt4all-backend/llmodel_c.h"
 #include "../gpt4all-backend/llmodel_c.cpp"
-#include "../gpt4all-backend/llamamodel.h" 
-#include "../gpt4all-backend/gptj.h" 
+//#include "../gpt4all-backend/llamamodel.h" 
+//#include "../gpt4all-backend/gptj.h" 
 #include "./utils.h"
 #include "./parse_json.h"
 
@@ -65,14 +65,18 @@ llmodel_model llmodel_create_model(std::string modelPath) {
 
     uint32_t magic;
     llmodel_model model;
-    std::ifstream f(modelPath, std::ios::binary);
-    f.read(reinterpret_cast<char*>(&magic), sizeof(magic));
+
+        FILE *f = fopen(modelPath.c_str(), "rb");
+        fread(&magic, sizeof(magic), 1, f);
+    //std::ifstream f(modelPath, std::ios::binary);
+    //f.read(reinterpret_cast<char*>(&magic), sizeof(magic));
 
     if (magic == 0x67676d6c)       { model = llmodel_gptj_create();  }
     if (magic == 0x67676a74)       { model = llmodel_llama_create(); }
     if (magic == 0x67676d6d)       { model = llmodel_mpt_create();   }
     else  {std::cerr << "Model is not of any supported type" << std::endl;}
-    f.close();
+    //f.close();
+    fclose(f);
     return model;
 }
 
@@ -87,24 +91,6 @@ void llmodel_free_model(llmodel_model model) {
     if (modelTypeInfo == typeid(MPT))        { llmodel_mpt_destroy(model);   }
 }
 
-void update_struct(llmodel_prompt_context  &prompt_context, chatParams &params){
-    // TODO: handle this better
-    prompt_context.logits = params.logits;
-    prompt_context.logits_size = params.logits_size;
-    prompt_context.tokens = params.tokens;
-    prompt_context.tokens_size = params.tokens_size;
-    prompt_context.n_past = params.n_past;
-    prompt_context.n_ctx = params.n_ctx;
-    prompt_context.n_predict = params.n_predict;
-    prompt_context.top_k = params.top_k;
-    prompt_context.top_p = params.top_p;
-    prompt_context.temp = params.temp;
-    prompt_context.n_batch = params.n_batch;
-    prompt_context.repeat_penalty = params.repeat_penalty;  
-    prompt_context.repeat_last_n = params.repeat_last_n;  
-    prompt_context.context_erase = params.context_erase; 
-    }
-    
 std::string hashstring = "";
 std::string answer = "";
 
@@ -179,10 +165,23 @@ int main(int argc, char* argv[]) {
     parse_params(argc, argv, params);
     
     //Create a prompt_context and copy all params from chatParams to prompt_context
-    llmodel_prompt_context prompt_context;
-    update_struct(prompt_context, params);
-
-
+    llmodel_prompt_context prompt_context = {
+     .logits = params.logits,
+     .logits_size = params.logits_size,
+     .tokens = params.tokens,
+     .tokens_size = params.tokens_size,
+     .n_past = params.n_past,
+     .n_ctx = params.n_ctx,
+     .n_predict = params.n_predict,
+     .top_k = params.top_k,
+     .top_p = params.top_p,
+     .temp = params.temp,
+     .n_batch = params.n_batch,
+     .repeat_penalty = params.repeat_penalty,  
+     .repeat_last_n = params.repeat_last_n,
+     .context_erase = params.context_erase,
+    }; 
+ 
     //////////////////////////////////////////////////////////////////////////
     ////////////                 LOAD THE MODEL                   ////////////
     ////////////////////////////////////////////////////////////////////////// 

@@ -45,9 +45,9 @@ struct chatParams {
         //std::vector<int32_t> tokens,        // current tokens in the context window 
 
         //These are in the prompt context, maybe add as parameters too.    
-        float *logits = NULL;               // logits of current context
+        float *logits = nullptr;               // logits of current context
         size_t logits_size = 0;             // the size of the raw logits vector
-        int32_t *tokens = NULL;             // current tokens in the context window
+        int32_t *tokens = nullptr;             // current tokens in the context window
         size_t tokens_size = 0;             // the size of the raw tokens vector
         int32_t n_past = 0;                 // number of tokens in past conversation
         //Parameters below you can import from json or with cli arguments
