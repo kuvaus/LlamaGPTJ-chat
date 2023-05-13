@@ -157,10 +157,10 @@ bool parse_params(int argc, char** argv, chatParams& params) {
         if (arg == "-j" || arg == "--load_json") {
             params.load_json = argv[++i];
             if (!params.load_json.empty()) {
-                std::cout << appname << ": parsing options from json: " << params.load_json << std::endl;
+                std::cout << APPNAME << ": parsing options from json: " << params.load_json << std::endl;
                 get_params_from_json(params);
             } else {
-                std::cout << appname << ": trying to parse options from json but got empty filename." << std::endl;
+                std::cout << APPNAME << ": trying to parse options from json but got empty filename." << std::endl;
             }
         } else if (arg == "--run-once") {
             params.run_once = true;

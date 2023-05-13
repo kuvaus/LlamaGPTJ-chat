@@ -61,17 +61,17 @@ struct chatParams {
         int32_t repeat_last_n = 64;          // last n tokens to penalize
         float context_erase = 0.75;          // percent of context to erase if we exceed the context window
         //Parameters below are not inside prompt_context, but handled separately
-	    int32_t seed = -1; 
-    	int32_t n_threads = std::min(4, (int32_t)std::thread::hardware_concurrency()); 
-    	std::string model = "./models/ggml-vicuna-13b-1.1-q4_2.bin";
-		std::string prompt = "";
+        int32_t seed = -1; 
+        int32_t n_threads = std::min(4, (int32_t)std::thread::hardware_concurrency()); 
+        std::string model = "./models/ggml-vicuna-13b-1.1-q4_2.bin";
+        std::string prompt = "";
         //You can toggle chat interactivity with these parameters
-		bool no_interactive = false;
-		bool use_animation = true;
-		bool run_once = false;
-		std::string load_template = ""; //template file location
-		std::string load_json = "";     //json file location
-	
+        bool no_interactive = false;
+        bool use_animation = true;
+        bool run_once = false;
+        std::string load_template = ""; //template file location
+        std::string load_json = "";     //json file location
+
 };
 
 enum ConsoleColor {
@@ -86,18 +86,15 @@ struct ConsoleState {
     ConsoleColor color = DEFAULT;
 };
 
-std::string appname = "LlamaGPTJ-chat";
+std::string APPNAME = "LlamaGPTJ-chat";
 
 //utils.h functions
 void set_console_color(ConsoleState &con_st, ConsoleColor color);
 std::string random_prompt(int32_t seed);
-std::string readFile(const std::string& filename);
-std::map<std::string, std::string> parse_json_string(const std::string& jsonString);
-std::string removeQuotes(const std::string& input);
+void print_usage(int argc, char** argv, const chatParams& params);
+bool parse_params(int argc, char** argv, chatParams& params);
 
 //parse_json.h functions
 void get_params_from_json(chatParams& params);
-void print_usage(int argc, char** argv, const chatParams& params);
-bool parse_params(int argc, char** argv, chatParams& params);
 
 #endif

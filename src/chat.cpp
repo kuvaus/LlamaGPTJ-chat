@@ -157,28 +157,24 @@ int main(int argc, char* argv[]) {
     con_st.use_color = true;
     set_console_color(con_st, DEFAULT);
 
-    chatParams params;
-    
-
-    //convert the default model path into Windows format if on WIN32
-    #ifdef _WIN32
-        std::filesystem::path p(params.model);
-        params.model = p.make_preferred().string();
-    #endif
- 
-    std::string input = "";
-    uint32_t magic;
-   
-
     set_console_color(con_st, PROMPT);
     set_console_color(con_st, BOLD);
-    std::cout << appname;
+    std::cout << APPNAME;
     set_console_color(con_st, DEFAULT);
     set_console_color(con_st, PROMPT);
     std::cout << " (v. " << VERSION << ")";
     set_console_color(con_st, DEFAULT);
     std::cout << "" << std::endl;
     
+
+
+    chatParams params;
+    //convert the default model path into Windows format if on WIN32
+    #ifdef _WIN32
+        std::filesystem::path p(params.model);
+        params.model = p.make_preferred().string();
+    #endif
+ 
     //get all parameters from cli arguments or json
     parse_params(argc, argv, params);
     
@@ -187,7 +183,9 @@ int main(int argc, char* argv[]) {
     update_struct(prompt_context, params);
 
 
-
+    //////////////////////////////////////////////////////////////////////////
+    ////////////                 LOAD THE MODEL                   ////////////
+    ////////////////////////////////////////////////////////////////////////// 
     auto future = std::async(std::launch::async, display_loading);
 
     //handle stderr for now
@@ -201,9 +199,8 @@ int main(int argc, char* argv[]) {
 
 
     llmodel_model model = llmodel_create_model(params.model.c_str());
-    std::cout << "\r" << appname << ": loading " << params.model.c_str()  << std::endl;
+    std::cout << "\r" << APPNAME << ": loading " << params.model.c_str()  << std::endl;
     
-
     //bring back stderr for now
     dup2(stderr_copy, fileno(stderr));
     close(stderr_copy);
@@ -226,8 +223,13 @@ int main(int argc, char* argv[]) {
         stop_display = true;
         future.wait();
         stop_display= false;
-        std::cout << "\r" << appname << ": done loading!" << std::flush;   
+        std::cout << "\r" << APPNAME << ": done loading!" << std::flush;   
     }
+    //////////////////////////////////////////////////////////////////////////
+    ////////////                /LOAD THE MODEL                   ////////////
+    ////////////////////////////////////////////////////////////////////////// 
+
+
 
     set_console_color(con_st, PROMPT);
     std::cout << "\n" << params.prompt.c_str() << std::endl;
@@ -256,9 +258,7 @@ int main(int argc, char* argv[]) {
 
     auto response_callback = [](int32_t token_id, const char *responsechars) {
     
-            std::string responsestring(responsechars);
-	
-            if (!responsestring.empty()) {
+            if (!(responsechars == nullptr || responsechars[0] == '\0')) {
 	        // stop the animation, printing response
             if (stop_display == false) {
 	            stop_display = true;
@@ -266,16 +266,9 @@ int main(int argc, char* argv[]) {
                 std::cerr << "\r" << " " << std::flush;
                 std::cerr << "\r" << std::flush;
             }
-	        // handle ### token separately
-            // this might not be needed in the future
-	        if (responsestring == "#" || responsestring == "##") {
-	            hashstring += responsestring;
-	        } else if (responsestring == "###" || hashstring == "###") {
-	            hashstring = "";
-	            return false;
-	        }
-				std::cout << responsestring << std::flush;
-	            answer = answer + responsestring;
+            
+				std::cout << responsechars << std::flush;
+	            answer += responsechars;
 	        }
 	            
 	    return true;
@@ -292,6 +285,8 @@ int main(int argc, char* argv[]) {
     //////////////////////////////////////////////////////////////////////////
 
     llmodel_setThreadCount(model, params.n_threads);
+
+    std::string input = "";
 
     //main chat loop.
     if (!params.no_interactive) {
