@@ -75,7 +75,7 @@ configure_file(
 # Include the binary directory for the generated header file
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
-add_subdirectory(../gpt4all-backend) 
+add_subdirectory(../gpt4all-backend llmodel) 
 
 add_executable(chat ./src/chat.cpp ./src/header.h ./src/utils.h ./src/parse_json.h ../gpt4all-backend/llmodel_c.h)
 target_link_libraries(chat PRIVATE llmodel)
