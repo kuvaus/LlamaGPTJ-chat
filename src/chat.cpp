@@ -1,7 +1,7 @@
 #include "./header.h"
 
-#include "../gpt4all-backend/llmodel_c.h"
-#include "../gpt4all-backend/llmodel_c.cpp"
+#include "../../gpt4all-backend/llmodel_c.h"
+#include "../../gpt4all-backend/llmodel_c.cpp"
 #include "./utils.h"
 #include "./parse_json.h"
 

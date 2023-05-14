@@ -90,7 +90,7 @@ struct ConsoleState {
     ConsoleColor color = DEFAULT;
 };
 
-std::string APPNAME = "LlamaGPTJ-chat";
+std::string APPNAME = "GPT4All-cli";
 
 //utils.h functions
 void set_console_color(ConsoleState &con_st, ConsoleColor color);
