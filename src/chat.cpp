@@ -182,6 +182,8 @@ int main(int argc, char* argv[]) {
     //////////////////////////////////////////////////////////////////////////
     ////////////                 LOAD THE MODEL                   ////////////
     ////////////////////////////////////////////////////////////////////////// 
+
+    //animation
     auto future = std::async(std::launch::async, display_loading);
 
     //handle stderr for now
@@ -218,7 +220,6 @@ int main(int argc, char* argv[]) {
     } else {
         stop_display = true;
         future.wait();
-        stop_display= false;
         std::cout << "\r" << APPNAME << ": done loading!" << std::flush;   
     }
     //////////////////////////////////////////////////////////////////////////
@@ -289,14 +290,14 @@ int main(int argc, char* argv[]) {
         input = get_input(con_st, model, input);
         //Interactive mode. We have a prompt.
         if (params.prompt != "") {
-            if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
+            if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + params.prompt + " " + input + default_footer).c_str(),
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
             if (params.save_log != ""){ save_chat_log((default_prefix + default_header + params.prompt + " " + input + default_footer).c_str(), params.save_log, answer.c_str()); }
         //Interactive mode. Else get prompt from input.
         } else {
-            if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
+            if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(),
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
@@ -307,7 +308,7 @@ int main(int argc, char* argv[]) {
         while (!params.run_once) {
             answer = ""; //New prompt. We stored previous answer in memory so clear it.
             input = get_input(con_st, model, input);
-            if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
+            if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(), 
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
@@ -316,7 +317,7 @@ int main(int argc, char* argv[]) {
         }
     //No-interactive mode. Get the answer once from prompt and print it.
     } else {
-        if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
+        if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
         llmodel_prompt(model, (default_prefix + default_header + params.prompt + default_footer).c_str(), 
         prompt_callback, response_callback, recalculate_callback, &prompt_context);
         if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
