@@ -76,8 +76,14 @@ std::tuple<std::string, std::string, std::string> read_prompt_template_file(cons
 ////////////           /READ PROMPT TEMPLATE FILE             ////////////
 //////////////////////////////////////////////////////////////////////////
 
-
-
+void save_chat_log(std::string save_log, std::string prompt, std::string answer) {
+  std::ofstream logfile(save_log, std::ios::app);
+  if (logfile.is_open()) {
+    logfile << prompt;
+    logfile << answer+"\n";
+    logfile.close();
+    }
+}
 
 
 void set_console_color(ConsoleState &con_st, ConsoleColor color) {
@@ -143,6 +149,8 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "                        load options instead from json at FNAME (default: empty/no)\n");
     fprintf(stderr, "  --load_template   FNAME\n");
     fprintf(stderr, "                        load prompt template from a txt file at FNAME (default: empty/no)\n");
+    fprintf(stderr, "  --save_log        FNAME\n");
+    fprintf(stderr, "                        save chat log to a file at FNAME (default: empty/no)\n");
     fprintf(stderr, "  -m FNAME, --model FNAME\n");
     fprintf(stderr, "                        model path (current: %s)\n", params.model.c_str());
     fprintf(stderr, "\n");
@@ -196,6 +204,8 @@ bool parse_params(int argc, char** argv, chatParams& params) {
             params.context_erase = static_cast<float>(std::stof(argv[++i]));
         } else if (arg == "--load_template") {
             params.load_template = argv[++i];
+        } else if (arg == "--save_log") {
+            params.save_log = argv[++i];
         } else if (arg == "-m" || arg == "--model") {
             params.model = argv[++i];
         } else if (arg == "-h" || arg == "--help") {

@@ -293,13 +293,14 @@ int main(int argc, char* argv[]) {
             llmodel_prompt(model, (default_prefix + default_header + params.prompt + " " + input + default_footer).c_str(),
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
+            if (params.save_log != ""){ save_chat_log((default_prefix + default_header + params.prompt + " " + input + default_footer).c_str(), params.save_log, answer.c_str()); }
         //Interactive mode. Else get prompt from input.
         } else {
             if (params.use_animation){ future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(),
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
-
+            if (params.save_log != ""){ save_chat_log(params.save_log, (default_prefix + default_header + input + default_footer).c_str(), answer.c_str()); }
         }
         //Interactive and continuous mode. Get prompt from input.
         //answer = response.c_str();
@@ -310,6 +311,7 @@ int main(int argc, char* argv[]) {
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(), 
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
+            if (params.save_log != ""){ save_chat_log(params.save_log, (default_prefix + default_header + input + default_footer).c_str(), answer.c_str()); }
             //answer = response.c_str();
         }
     //No-interactive mode. Get the answer once from prompt and print it.
@@ -318,6 +320,7 @@ int main(int argc, char* argv[]) {
         llmodel_prompt(model, (default_prefix + default_header + params.prompt + default_footer).c_str(), 
         prompt_callback, response_callback, recalculate_callback, &prompt_context);
         if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
+        if (params.save_log != ""){ save_chat_log(params.save_log, (default_prefix + default_header + params.prompt + default_footer).c_str(), answer.c_str()); }
 
     }
 

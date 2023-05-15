@@ -79,7 +79,7 @@ void get_params_from_json(chatParams& params) {
         params.run_once = stob(removeQuotes(parsed["run-once"]));        
     if (parsed.find("no-animation") != parsed.end())
         params.use_animation = !stob(removeQuotes(parsed["no-animation"]));
-        
+
     if (parsed.find("repeat_penalty") != parsed.end())
         params.repeat_penalty = std::stof(parsed["repeat_penalty"]);
     if (parsed.find("repeat_last_n") != parsed.end())
@@ -87,7 +87,9 @@ void get_params_from_json(chatParams& params) {
     if (parsed.find("context_erase") != parsed.end())
         params.context_erase = std::stof(parsed["context_erase"]);        
     if (parsed.find("load_template") != parsed.end())
-        params.load_template = removeQuotes(parsed["load_template"]);    
+        params.load_template = removeQuotes(parsed["load_template"]);   
+    if (parsed.find("save_log") != parsed.end())
+        params.load_template = removeQuotes(parsed["save_log"]);
 }
 
 
