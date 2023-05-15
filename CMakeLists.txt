@@ -43,8 +43,11 @@ option(LLAMA_FMA                    "llama: enable FMA"                         
 
 # sanitizers
 #set(LLAMA_BUILD_EXAMPLES ON CACHE BOOL "llama: build examples" FORCE)
-#set(BUILD_SHARED_LIBS ON FORCE)
-
+IF(UNIX)
+    IF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
+    set(BUILD_SHARED_LIBS ON FORCE)
+    ENDIF()
+ENDIF()
 
 if (GGML_SANITIZE_THREAD)
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fsanitize=thread")
@@ -83,7 +86,8 @@ endif ()
 if(APPLE)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-search_paths_first -lSystem")
 elseif(UNIX)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static")
+	if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
+  		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static")
 elseif(WIN32)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static")
 endif()
