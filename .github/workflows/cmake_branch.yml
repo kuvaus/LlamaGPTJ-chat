@@ -80,9 +80,7 @@ jobs:
     
 
     - name: Run on ARM64
-      echo "text1"
       if: matrix.arch == 'aarch64'
-      echo "text2"
       uses: pguyot/arm-runner-action@v2
       with:
         arch: ${{ matrix.arch }}
