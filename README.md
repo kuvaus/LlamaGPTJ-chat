@@ -7,9 +7,6 @@ Simple command line chat program for [GPT-J](https://en.wikipedia.org/wiki/GPT-J
 > **Warning**
 > Very early progress, might have bugs
 
-> **Note**
-> For MPT models, use --batch_size 1 for now
-
 # Table of contents
 <!-- TOC -->
 * [Installation](#installation)
