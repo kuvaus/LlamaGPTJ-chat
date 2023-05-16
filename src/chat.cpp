@@ -283,11 +283,11 @@ int main(int argc, char* argv[]) {
         prompt_callback, response_callback, recalculate_callback, &prompt_context);
         if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
         if (params.save_log != ""){ save_chat_log(params.save_log, (default_prefix + default_header + params.prompt + default_footer).c_str(), answer.c_str()); }
-
+        std::cout << std::endl;
     }
 
 
     set_console_color(con_st, DEFAULT);
-    //llmodel_model_destroy(model);
+    llmodel_model_destroy(model);
     return 0;
 }
