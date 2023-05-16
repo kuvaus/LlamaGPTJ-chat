@@ -279,6 +279,6 @@ int main(int argc, char* argv[]) {
 
 
     set_console_color(con_st, DEFAULT);
-    llmodel_free_model(model);
+    llmodel_model_destroy(model);
     return 0;
 }
