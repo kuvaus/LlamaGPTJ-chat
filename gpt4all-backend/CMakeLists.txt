@@ -33,7 +33,7 @@ if (GPT4ALL_AVX_ONLY)
     set(LLAMA_FMA  OFF CACHE BOOL "llama: enable FMA" FORCE)
 endif()
 
-add_subdirectory(llama.cpp)
+#add_subdirectory(llama.cpp)
 
 add_library(llmodel
     gptj.h gptj.cpp
