@@ -65,7 +65,7 @@ jobs:
         if ("${{ matrix.os }}" -eq "windows-latest") {
           $env:PATH += ";C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin"
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DAVX2=${{ matrix.instructions == 'avx2' && 'ON' || 'OFF' }} -G "MinGW Makefiles"
-        } else if ("${{ matrix.arch }}" -eq "aarch64") {
+        } elseif ("${{ matrix.arch }}" -eq "aarch64") {
         } else {
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DAVX2=${{ matrix.instructions == 'avx2' && 'ON' || 'OFF' }}
         }
