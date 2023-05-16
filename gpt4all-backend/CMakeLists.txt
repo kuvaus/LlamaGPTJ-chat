@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 #if(APPLE)
-#  option(BUILD_UNIVERSAL "Build a Universal binary on macOS" OFF)
+#  option(BUILD_UNIVERSAL "Build a Universal binary on macOS" ON)
 #  if(BUILD_UNIVERSAL)
 #    # Build a Universal binary on macOS
 #    # This requires that the found Qt library is compiled as Universal binaries.
@@ -33,7 +33,7 @@ if (GPT4ALL_AVX_ONLY)
     set(LLAMA_FMA  OFF CACHE BOOL "llama: enable FMA" FORCE)
 endif()
 
-#add_subdirectory(llama.cpp)
+add_subdirectory(llama.cpp)
 
 add_library(llmodel
     gptj.h gptj.cpp
