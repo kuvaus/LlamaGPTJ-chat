@@ -288,6 +288,6 @@ int main(int argc, char* argv[]) {
 
 
     set_console_color(con_st, DEFAULT);
-    llmodel_model_destroy(model);
+    //llmodel_model_destroy(model);
     return 0;
 }

@@ -43,7 +43,8 @@ option(LLAMA_FMA                    "llama: enable FMA"                         
 
 # sanitizers
 #set(LLAMA_BUILD_EXAMPLES ON CACHE BOOL "llama: build examples" FORCE)
-if(UNIX)
+if(APPLE)
+elseif(UNIX)
     if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
     option(AVX2                         "enable AVX2"                                           OFF)
     option(LLAMA_AVX                    "llama: enable AVX"                                     OFF)
