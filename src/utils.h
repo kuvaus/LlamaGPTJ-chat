@@ -21,7 +21,7 @@ void check_avx_support_at_startup() {
     const bool fma(__builtin_cpu_supports("fma"));
     if (avx && avx2 && fma) {std::cout << "Your computer supports AVX2" << std::endl;}
     else if (avx)           {std::cout << "Your computer only supports AVX1" << std::endl;}
-    else                    {std::cout << "Your computer does not support AVX1 or AVX2\nThe program will not run." << std::endl; exit(0);} 
+    else                    {std::cout << "Your computer does not support AVX1 or AVX2\nThe program will likely not run." << std::endl;} 
 #endif
 }
 
