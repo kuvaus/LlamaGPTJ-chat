@@ -1,7 +1,5 @@
 #include "./header.h"
-
 #include "../gpt4all-backend/llmodel_c.h"
-#include "../gpt4all-backend/llmodel_c.cpp"
 #include "./utils.h"
 #include "./parse_json.h"
 
@@ -52,54 +50,6 @@ void display_loading() {
 //////////////////////////////////////////////////////////////////////////
 
 
-
-//////////////////////////////////////////////////////////////////////////
-////////////                 LLAMA FUNCTIONS                  ////////////
-//////////////////////////////////////////////////////////////////////////
-
-//recognize and create correct model type automatically using context size
-llmodel_model llmodel_create_model(std::string modelPath) {
-
-    uint32_t magic;
-    llmodel_model model;
-
-        FILE *f = fopen(modelPath.c_str(), "rb");
-        fread(&magic, sizeof(magic), 1, f);
-    //std::ifstream f(modelPath, std::ios::binary);
-    //f.read(reinterpret_cast<char*>(&magic), sizeof(magic));
-
-    if (magic == 0x67676d6c)       { model = llmodel_gptj_create();  }
-    if (magic == 0x67676a74)       { model = llmodel_llama_create(); }
-    if (magic == 0x67676d6d)       { model = llmodel_mpt_create();   }
-    else  {std::cerr << "Model is not of any supported type" << std::endl;}
-    //f.close();
-    fclose(f);
-    return model;
-}
-
-//free correct model type automatically using model typeid
-void llmodel_free_model(llmodel_model model) {
-
-    LLModelWrapper *wrapper = reinterpret_cast<LLModelWrapper*>(model);
-    const std::type_info &modelTypeInfo = typeid(*wrapper->llModel);
-
-    if (modelTypeInfo == typeid(GPTJ))       { llmodel_gptj_destroy(model);  }
-    if (modelTypeInfo == typeid(LLamaModel)) { llmodel_llama_destroy(model); }
-    if (modelTypeInfo == typeid(MPT))        { llmodel_mpt_destroy(model);   }
-}
-
-std::string hashstring = "";
-std::string answer = "";
-
-
-//////////////////////////////////////////////////////////////////////////
-////////////                /LLAMA FUNCTIONS                  ////////////
-//////////////////////////////////////////////////////////////////////////
-
-
-
-
-
 //////////////////////////////////////////////////////////////////////////
 ////////////                 CHAT FUNCTIONS                   ////////////
 //////////////////////////////////////////////////////////////////////////
@@ -114,13 +64,15 @@ std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& in
     set_console_color(con_st, DEFAULT);
 
     if (input == "exit" || input == "quit") {       
-        llmodel_free_model(model);
+        llmodel_model_destroy(model);
         exit(0);
     }
 
     return input;
 }
 
+std::string hashstring = "";
+std::string answer = "";
 
 //////////////////////////////////////////////////////////////////////////
 ////////////                /CHAT FUNCTIONS                   ////////////
@@ -196,7 +148,7 @@ int main(int argc, char* argv[]) {
     #endif
 
 
-    llmodel_model model = llmodel_create_model(params.model.c_str());
+    llmodel_model model = llmodel_model_create(params.model.c_str());
     std::cout << "\r" << APPNAME << ": loading " << params.model.c_str()  << std::endl;
     
     //bring back stderr for now
