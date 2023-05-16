@@ -25,14 +25,6 @@ cd LlamaGPTJ-chat
 You need to also download a model file, see [supported models](#gpt-j-llama-and-mpt-models) for details and links.
 
 ### Build
-On **Windows** you need to have MinGW or equivalent installed.
-```sh
-mkdir build
-cd build
-cmake .. -G "MinGW Makefiles"
-cmake --build . --parallel
-```
-On **Linux/Mac** it should work out of the box.
 ```sh
 mkdir build
 cd build
