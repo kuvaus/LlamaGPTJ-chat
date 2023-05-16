@@ -80,13 +80,16 @@ jobs:
     
 
     - name: Run on ARM64
+      echo "text1"
       if: matrix.arch == 'aarch64'
-      uses: uraimo/run-on-arch-action@v2
+      echo "text2"
+      uses: pguyot/arm-runner-action@v2
       with:
         arch: ${{ matrix.arch }}
         distro: ${{ matrix.os }}
         #githubToken: ${{ github.token }}
         run: |
+          echo "text3"
           cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
           ctest -C ${{env.BUILD_TYPE}}
 
