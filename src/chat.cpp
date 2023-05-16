@@ -148,7 +148,7 @@ int main(int argc, char* argv[]) {
     std::cout << " (v. " << VERSION << ")";
     set_console_color(con_st, DEFAULT);
     std::cout << "" << std::endl;
-    
+    check_avx_support_at_startup();
 
 
     chatParams params;

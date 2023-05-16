@@ -14,8 +14,8 @@ endif()
 project(LlamaGPTJ-chat)
 
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 1)
-set(VERSION_PATCH 9)
+set(VERSION_MINOR 2)
+set(VERSION_PATCH 0)
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS "on")
@@ -31,7 +31,7 @@ endif()
 
 
 # options
-option(AVX2                         "enable AVX"                                            ON)
+option(AVX2                         "enable AVX2"                                           ON)
 
 option(LLAMA_AVX                    "llama: enable AVX"                                     ON)
 option(LLAMA_AVX2                   "llama: enable AVX2"                                    ${AVX2})

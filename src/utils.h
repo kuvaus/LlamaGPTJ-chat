@@ -14,6 +14,17 @@ bool containsSubstring(const std::string &str, const std::string &substr) {
     return str.find(substr) != std::string::npos;
 }
 
+bool check_avx_support_at_startup() {
+#if defined(__x86_64__) || defined(__i386__)
+    const bool avx(__builtin_cpu_supports("avx"));
+    const bool avx2(__builtin_cpu_supports("avx2"));
+    const bool fma(__builtin_cpu_supports("fma"));
+    if (avx && avx2 && fma) {std::cout << "Your computer supports AVX2" << std::endl; return true;}
+    else if (avx)           {std::cout << "Your computer only supports AVX1" << std::endl; return false;}
+    else                    {std::cout << "Your computer does not support AVX1 or AVX2\nThe program will not run." << std::endl; exit(0); } 
+#endif
+}
+
 //////////////////////////////////////////////////////////////////////////
 ////////////            READ PROMPT TEMPLATE FILE             ////////////
 //////////////////////////////////////////////////////////////////////////
