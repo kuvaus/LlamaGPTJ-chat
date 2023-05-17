@@ -13,6 +13,7 @@ Simple command line chat program for [GPT-J](https://en.wikipedia.org/wiki/GPT-J
 * [Usage](#usage)
 * [GPT-J, LLaMA, and MPT models](#gpt-j-llama-and-mpt-models)
 * [Detailed command list](#detailed-command-list)
+* [Useful features](#useful-features)
 * [License](#license)
 <!-- TOC -->
 
@@ -129,12 +130,19 @@ options:
   -m FNAME, --model FNAME
                         model path (current: ./models/ggml-vicuna-13b-1.1-q4_2.bin)
 ```
-By default, the program prints the chat to standard (stdout) output, so if you're including the program into your app, it only needs to read stdout. You can also save the whole chat log to a file with `--save_log` option.
+## Useful features
+Here are some handy features and details on how to achieve them using command line options.
 
-If you only need the program to run once without any user interactions, one way is to set prompt with -p "prompt" and using --no-interactive and --no-animation flags. The program will read the prompt, print the answer, and close.
+### Save chat log and read output from other apps
+By default, the program prints the chat to standard (stdout) output, so if you're including the program into your app, it only needs to read stdout. You can also save the whole chat log to a text file with `--save_log` option.
 
-If you want a personality for your AI, you can change `prompt_template_sample.txt` and use `--load_template` to load the modified file. The only constant is that your input during chat will be put on the `%1` line. Instructions, prompt, response, and everything else can be replaced any way you want. Having different prompt_templates is an easy way to add different AI characters.
+### Run the program once without user interaction
+If you only need the program to run once without any user interactions, one way is to set prompt with `-p "prompt"` and using `--no-interactive` and `--no-animation` flags. The program will read the prompt, print the answer, and close.
 
+### Add AI personalities and characters
+If you want a personality for your AI, you can change `prompt_template_sample.txt` and use `--load_template` to load the modified file. The only constant is that your input during chat will be put on the `%1` line. Instructions, prompt, response, and everything else can be replaced any way you want. Having different `personality_template.txt` files is an easy way to add different AI characters.
+
+### Load all parameters using JSON
 You can also fetch parameters from a json file with `--load_json "/path/to/file.json"` flag. Different models might perform better or worse with different input parameters so using json files is a handy way to store and load all the settings at once. The JSON file loader is designed to be simple in order to prevent any external dependencies, and as a result, the JSON file must follow a specific format. Here is a simple example:
 
 ```javascript
