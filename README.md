@@ -38,7 +38,9 @@ cmake --build . --parallel
 ```
 > **Note**
 > 
-> If you have an old processor, you can turn AVX2 instructions off in the build step with `-DAVX2=OFF` flag.
+> If you have an old processor, you can turn AVX2 instructions OFF in the build step with `-DAVX2=OFF` flag.
+> 
+> If you have a new processor, you can turn AVX512 instructions ON in the build step with `-DAVX512=ON` flag.
 > 
 > On old macOS, set `-DBUILD_UNIVERSAL=OFF` to make the build x86 only instead of the universal Intel/ARM64 binary.
 > 
