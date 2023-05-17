@@ -18,9 +18,11 @@ void check_avx_support_at_startup() {
 #if defined(__x86_64__) || defined(__i386__)
     const bool avx(__builtin_cpu_supports("avx"));
     const bool avx2(__builtin_cpu_supports("avx2"));
+    const bool avx512(__builtin_cpu_supports("avx512"));
     const bool fma(__builtin_cpu_supports("fma"));
-    if (avx && avx2 && fma) {std::cout << "Your computer supports AVX2" << std::endl;}
-    else if (avx)           {std::cout << "Your computer only supports AVX1" << std::endl;}
+    if (avx512 && avx && avx2 && fma) {std::cout << "Your computer supports AVX512" << std::endl;}
+    else if (avx && avx2 && fma)      {std::cout << "Your computer supports AVX2" << std::endl;}
+    else if (avx)                     {std::cout << "Your computer only supports AVX1" << std::endl;}
     else                    {std::cout << "Your computer does not support AVX1 or AVX2\nThe program will likely not run." << std::endl;} 
 #endif
 }
