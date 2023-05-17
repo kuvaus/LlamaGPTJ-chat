@@ -25,6 +25,7 @@ cd LlamaGPTJ-chat
 You need to also download a model file, see [supported models](#gpt-j-llama-and-mpt-models) for details and links.
 
 ### Build
+On most systems, you only need this to build:
 ```sh
 mkdir build
 cd build
@@ -32,7 +33,12 @@ cmake ..
 cmake --build . --parallel
 ```
 > **Note**
-> If you have an old processor, you can turn AVX2 instructions off in the build step with `-DAVX2=OFF` flag
+> 
+> If you have an old processor, you can turn AVX2 instructions off in the build step with `-DAVX2=OFF` flag.
+> 
+> On old macOS, set `-DBUILD_UNIVERSAL=OFF` to make the build x86 only instead of the universal Intel/ARM64 binary.
+> 
+> On Windows you can now use Visual Studio (MSVC) or MinGW. If you want MinGW build instead, set `-G "MinGW Makefiles"`.
 
 ## Usage
 
