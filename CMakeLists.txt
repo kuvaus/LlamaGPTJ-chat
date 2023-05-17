@@ -15,7 +15,7 @@ project(LlamaGPTJ-chat)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)
-set(VERSION_PATCH 0)
+set(VERSION_PATCH 1)
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS "on")
@@ -32,12 +32,13 @@ endif()
 
 # options
 option(AVX2                         "enable AVX2"                                           ON)
+option(AVX512                       "enable AVX512"                                         OFF)
 
 option(LLAMA_AVX                    "llama: enable AVX"                                     ON)
 option(LLAMA_AVX2                   "llama: enable AVX2"                                    ${AVX2})
-option(LLAMA_AVX512                 "llama: enable AVX512"                                  OFF)
-option(LLAMA_AVX512_VBMI            "llama: enable AVX512-VBMI"                             OFF)
-option(LLAMA_AVX512_VNNI            "llama: enable AVX512-VNNI"                             OFF)
+option(LLAMA_AVX512                 "llama: enable AVX512"                                  ${AVX512})
+option(LLAMA_AVX512_VBMI            "llama: enable AVX512-VBMI"                             ${AVX512})
+option(LLAMA_AVX512_VNNI            "llama: enable AVX512-VNNI"                             ${AVX512})
 option(LLAMA_FMA                    "llama: enable FMA"                                     ${AVX2})
 
 
