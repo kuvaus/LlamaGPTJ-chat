@@ -206,33 +206,33 @@ int main(int argc, char* argv[]) {
 
 
     auto prompt_callback = [](int32_t token_id, const char *promptchars)  {
-	        // You can handle prompt here if needed
-	        return true;
-	    };
+	    // You can handle prompt here if needed
+	    return true;
+	};
 
 
     auto response_callback = [](int32_t token_id, const char *responsechars) {
     
-            if (!(responsechars == nullptr || responsechars[0] == '\0')) {
-	        // stop the animation, printing response
-            if (stop_display == false) {
-	            stop_display = true;
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                std::cerr << "\r" << " " << std::flush;
-                std::cerr << "\r" << std::flush;
-            }
+        if (!(responsechars == nullptr || responsechars[0] == '\0')) {
+	    // stop the animation, printing response
+        if (stop_display == false) {
+	        stop_display = true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            std::cerr << "\r" << " " << std::flush;
+            std::cerr << "\r" << std::flush;
+        }
             
-				std::cout << responsechars << std::flush;
-	            answer += responsechars;
-	        }
+			std::cout << responsechars << std::flush;
+	        answer += responsechars;
+	    }
 	            
 	    return true;
 	};
 	
-	auto recalculate_callback = [](bool is_recalculating) {
-	        // You can handle recalculation requests here if needed
-	    return is_recalculating;
-	};
+    auto recalculate_callback = [](bool is_recalculating) {
+        // You can handle recalculation requests here if needed
+        return is_recalculating;
+    };
 
 
     //////////////////////////////////////////////////////////////////////////
