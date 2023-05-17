@@ -18,6 +18,8 @@ Simple command line chat program for [GPT-J](https://en.wikipedia.org/wiki/GPT-J
 <!-- TOC -->
 
 ## Installation
+Since the program is made using c++ it should build and run on most Linux, MacOS and Windows systems. The [Releases](https://github.com/kuvaus/LlamaGPTJ-chat/releases) link has ready-made binaries. AVX2 is faster and works on most newer computers. If you run the program, it will check and print if your computer has AVX2 support.
+
 ### Download
 ```sh
 git clone --recurse-submodules https://github.com/kuvaus/LlamaGPTJ-chat
@@ -26,6 +28,7 @@ cd LlamaGPTJ-chat
 You need to also download a model file, see [supported models](#gpt-j-llama-and-mpt-models) for details and links.
 
 ### Build
+Since the program is made using c++ it should build and run on most Linux, MacOS and Windows systems. 
 On most systems, you only need this to build:
 ```sh
 mkdir build
@@ -40,6 +43,8 @@ cmake --build . --parallel
 > On old macOS, set `-DBUILD_UNIVERSAL=OFF` to make the build x86 only instead of the universal Intel/ARM64 binary.
 > 
 > On Windows you can now use Visual Studio (MSVC) or MinGW. If you want MinGW build instead, set `-G "MinGW Makefiles"`.
+>
+> On ARM64 Linux there are no ready-made binaries, but you can now build it from source.
 
 ## Usage
 
@@ -53,8 +58,8 @@ But you're free to move it anywhere. Simple command for 4 threads to get started
 ./chat -m "/path/to/modelfile/ggml-vicuna-13b-1.1-q4_2.bin" -t 4
 ```
 or
-```
-./chat -m "/path/to/modelfile/ggml-gpt4all-j.bin" -t 4
+```sh
+./chat -m "/path/to/modelfile/ggml-gpt4all-j-v1.3-groovy.bin" -t 4
 ```
 
 Happy chatting!
