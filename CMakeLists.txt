@@ -2,7 +2,14 @@ cmake_minimum_required (VERSION 3.2)
 
 if(!APPLE)
   find_package(CURL REQUIRED)
+  if(CURL_FOUND)
+  include_directories(${CURL_INCLUDE_DIR})
+  endif()
 endif()
+
+    # this is heuristically generated, and may not be correct
+    find_package(CURL CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE CURL::libcurl)
 
 if(APPLE)
   option(BUILD_UNIVERSAL "Build a Universal binary on macOS" ON)
