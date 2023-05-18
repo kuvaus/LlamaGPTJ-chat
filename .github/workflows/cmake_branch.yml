@@ -31,6 +31,9 @@ jobs:
       with:
           submodules: recursive
 
+    - name: "Install libcurl dependencies"
+      run: sudo apt install -y libssl-dev libcurl4-openssl-dev
+
     - name: Configure CMake
       if: matrix.build == 'msvc'
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}

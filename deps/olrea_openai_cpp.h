@@ -37,11 +37,11 @@
 #include <cstdlib>
 #include <map>
 
-//#ifndef CURL_STATICLIB
+#ifndef CURL_STATICLIB
 #include <curl/curl.h>
-//#else 
-//#include "curl/curl.h"
-//#endif
+#else 
+#include "curl/curl.h"
+#endif
 
 #include "nlohmann_json.h"  // nlohmann/json
 
