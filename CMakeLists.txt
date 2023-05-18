@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.2)
 
-if(not APPLE)
+if(!APPLE)
   find_package(CURL REQUIRED)
 endif()
 
