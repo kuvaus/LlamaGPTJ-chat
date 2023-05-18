@@ -31,9 +31,11 @@ jobs:
       with:
           submodules: recursive
 
-    - name: "Install libcurl dependencies"
+    - name: "Install libcurl dependencies on Ubuntu"
       if: matrix.config.os == 'ubuntu-latest'
       run: sudo apt install -y libssl-dev libcurl4-openssl-dev
+
+    - name: "Install libcurl dependencies on Windows"
       if: matrix.config.os == 'windows-latest'
       run: |
         git clone https://github.com/microsoft/vcpkg.git
