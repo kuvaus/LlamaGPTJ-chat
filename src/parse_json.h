@@ -5,92 +5,42 @@
 
 #include "header.h" 
 
-//helper function to convert string to bool
-bool stob(const std::string& str) {
-    std::string lowerStr = str;
-    std::transform(str.begin(), str.end(), lowerStr.begin(), ::tolower);
-    if (lowerStr == "true") {
-        return true;
-    } else if (lowerStr == "false") {
-        return false;
-    } else {
-        throw std::invalid_argument("Invalid boolean string");
-    }
-}
-
-std::string readFile(const std::string& filename) {
-    std::ifstream inFile(filename);
-    if (!inFile) {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-        return "";
-    }
-    std::stringstream buffer;
-    buffer << inFile.rdbuf();
-    inFile.close();
-    return buffer.str();
-}
-
-std::map<std::string, std::string> parse_json_string(const std::string& jsonString) {
-    std::map<std::string, std::string> resultMap;
-    std::regex pattern("\"([^\"]+)\":\\s*([^\"]+|\"[^\"]+\")");
-    std::smatch match;
-    std::string::const_iterator searchStart(jsonString.cbegin());
-
-    while (std::regex_search(searchStart, jsonString.cend(), match, pattern)) {
-        resultMap[match[1]] = match[2];
-        searchStart = match.suffix().first;
-    }
-    return resultMap;
-}
-
-std::string removeQuotes(const std::string& input) {
-    std::string result = input;
-    result.erase(std::remove(result.begin(), result.end(), '\"'), result.end());
-    return result;
+void from_json(const nlohmann::json& j, chatParams& params) {
+    auto it = j.find("n_ctx"); if (it != j.end()) { it->get_to(params.n_ctx); }
+    it = j.find("n_predict"); if (it != j.end()) { it->get_to(params.n_predict); }
+    it = j.find("top_k"); if (it != j.end()) { it->get_to(params.top_k); }
+    it = j.find("top_p"); if (it != j.end()) { it->get_to(params.top_p); }
+    it = j.find("temp"); if (it != j.end()) { it->get_to(params.temp); }
+    it = j.find("n_batch"); if (it != j.end()) { it->get_to(params.n_batch); }
+    it = j.find("repeat_penalty"); if (it != j.end()) { it->get_to(params.repeat_penalty); }
+    it = j.find("repeat_last_n"); if (it != j.end()) { it->get_to(params.repeat_last_n); }
+    it = j.find("context_erase"); if (it != j.end()) { it->get_to(params.context_erase); }
+    it = j.find("seed"); if (it != j.end()) { it->get_to(params.seed); }
+    it = j.find("n_threads"); if (it != j.end()) { it->get_to(params.n_threads); }
+    it = j.find("model"); if (it != j.end()) { it->get_to(params.model); }
+    it = j.find("prompt"); if (it != j.end()) { it->get_to(params.prompt); }
+    it = j.find("no_interactive"); if (it != j.end()) { it->get_to(params.no_interactive); }
+    it = j.find("no-animation"); if (it != j.end())
+         { it->get_to(params.use_animation); params.use_animation = !params.use_animation; }
+    it = j.find("run_once"); if (it != j.end()) { it->get_to(params.run_once); }
+    it = j.find("load_template"); if (it != j.end()) { it->get_to(params.load_template); }
+    it = j.find("load_json"); if (it != j.end()) { it->get_to(params.load_json); }
+    it = j.find("save_log"); if (it != j.end()) { it->get_to(params.save_log); }
+    it = j.find("httpserver"); if (it != j.end()) { it->get_to(params.httpserver); }
+    it = j.find("openai_api_key"); if (it != j.end()) { it->get_to(params.openai_api_key); }
 }
 
 void get_params_from_json(chatParams& params) {
-    std::map<std::string, std::string> parsed = parse_json_string(readFile(params.load_json));
-
-    if (parsed.find("top_p") != parsed.end())
-        params.top_p = std::stof(parsed["top_p"]);
-    if (parsed.find("top_k") != parsed.end())
-        params.top_k = std::stoi(parsed["top_k"]);
-    if (parsed.find("temp") != parsed.end())
-        params.temp = std::stof(parsed["temp"]);
-    if (parsed.find("n_predict") != parsed.end())
-        params.n_predict = std::stoi(parsed["n_predict"]);
-    if (parsed.find("n_batch") != parsed.end())
-        params.n_batch = std::stoi(parsed["n_batch"]);
-    if (parsed.find("n_ctx") != parsed.end())
-        params.n_ctx = std::stoi(parsed["n_ctx"]); 
-    if (parsed.find("seed") != parsed.end())
-        params.seed = std::stoi(parsed["seed"]);
-    if (parsed.find("threads") != parsed.end())
-        params.n_threads = std::stoi(parsed["threads"]);
-    if (parsed.find("model") != parsed.end())
-        params.model = removeQuotes(parsed["model"]);
-
-    if (parsed.find("prompt") != parsed.end())
-        params.prompt = removeQuotes(parsed["prompt"]);
-    if (parsed.find("no-interactive") != parsed.end())
-        params.no_interactive = stob(removeQuotes(parsed["no-interactive"]));    
-    if (parsed.find("run-once") != parsed.end())
-        params.run_once = stob(removeQuotes(parsed["run-once"]));        
-    if (parsed.find("no-animation") != parsed.end())
-        params.use_animation = !stob(removeQuotes(parsed["no-animation"]));
-
-    if (parsed.find("repeat_penalty") != parsed.end())
-        params.repeat_penalty = std::stof(parsed["repeat_penalty"]);
-    if (parsed.find("repeat_last_n") != parsed.end())
-        params.repeat_last_n = std::stoi(parsed["repeat_last_n"]);
-    if (parsed.find("context_erase") != parsed.end())
-        params.context_erase = std::stof(parsed["context_erase"]);        
-    if (parsed.find("load_template") != parsed.end())
-        params.load_template = removeQuotes(parsed["load_template"]);   
-    if (parsed.find("save_log") != parsed.end())
-        params.load_template = removeQuotes(parsed["save_log"]);
-}
+    nlohmann::json j;
+    
+    std::ifstream inFile(params.load_json);
+    if (!inFile) {
+        std::cerr << "Unable to open file: " << params.load_json << std::endl;
+        return;
+    }
+    inFile >> j;
+    from_json(j, params);
+};
 
 
 #endif

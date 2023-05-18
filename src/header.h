@@ -21,6 +21,12 @@
 #include <cstring>
 #include <functional>
 
+//http-server
+//#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "yhirose_cpp_httplib.h"
+#include "nlohmann_json.h"
+#include "olrea_openai_cpp.h"
+
 //For Windows paths
 //Commented out to support really old xcode
 #ifdef _WIN32
@@ -87,6 +93,8 @@ struct chatParams {
         std::string load_template = "";     //template file location
         std::string load_json = "";         //json file location
         std::string save_log = "";          //saved chat log file location
+        std::string openai_api_key = "";    //use chatgpt
+        bool httpserver = true;             //use http server
 
 };
 

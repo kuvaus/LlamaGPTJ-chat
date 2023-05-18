@@ -10,6 +10,107 @@
     #include <windows.h> 
 #endif
 
+
+//////////////////////////////////////////////////////////////////////////
+////////////                    ANIMATION                     ////////////
+//////////////////////////////////////////////////////////////////////////
+
+std::atomic<bool> stop_display{false}; 
+
+void display_frames() {
+    const char* frames[] = {".", ":", "'", ":"};
+    int frame_index = 0;
+    ConsoleState con_st;
+    con_st.use_color = true;
+    while (!stop_display) {
+        set_console_color(con_st, PROMPT);
+        std::cerr << "\r" << frames[frame_index % 4] << std::flush;
+        frame_index++;
+        set_console_color(con_st, DEFAULT);
+        if (!stop_display){
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            std::cerr << "\r" << " " << std::flush;
+            std::cerr << "\r" << std::flush;
+        }
+    }
+}
+
+void display_loading() {
+
+    while (!stop_display) {
+
+
+        for (int i=0; i < 14; i++){
+                fprintf(stdout, ".");
+                fflush(stdout);
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                if (stop_display){ break; }
+        }
+        
+         std::cout << "\r" << "               " << "\r" << std::flush;
+    }
+    std::cout << "\r" << " " << std::flush;
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+////////////                   /ANIMATION                     ////////////
+//////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////
+////////////                 CHAT FUNCTIONS                   ////////////
+//////////////////////////////////////////////////////////////////////////
+
+
+
+std::string get_input(ConsoleState& con_st, std::string& input, llmodel_model model = nullptr) {
+    set_console_color(con_st, USER_INPUT);
+
+    std::cout << "\n> ";
+    std::getline(std::cin, input);
+    set_console_color(con_st, DEFAULT);
+
+    if (input == "exit" || input == "quit") {       
+        llmodel_model_destroy(model);
+        exit(0);
+    }
+
+    return input;
+}
+
+
+void save_chat_log(std::string save_log, std::string prompt, std::string answer) {
+  std::ofstream logfile(save_log, std::ios::app);
+  if (logfile.is_open()) {
+    logfile << prompt;
+    logfile << answer+"\n";
+    logfile.close();
+    }
+}
+
+
+std::string random_prompt(int32_t seed) {
+    const std::vector<std::string> prompts = {
+        "So", "Once upon a time", "When", "The", "After", "If", "import", "He", "She", "They"
+    };
+
+    std::mt19937 rng(seed);
+    return prompts[rng() % prompts.size()];
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+////////////                /CHAT FUNCTIONS                   ////////////
+//////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////
+////////////                 UTIL FUNCTIONS                   ////////////
+//////////////////////////////////////////////////////////////////////////
+
+
 bool containsSubstring(const std::string &str, const std::string &substr) {
     return str.find(substr) != std::string::npos;
 }
@@ -26,6 +127,11 @@ void check_avx_support_at_startup() {
     else                    {std::cout << "Your computer does not support AVX1 or AVX2\nThe program will likely not run." << std::endl;} 
 #endif
 }
+
+//////////////////////////////////////////////////////////////////////////
+////////////                /UTIL FUNCTIONS                   ////////////
+//////////////////////////////////////////////////////////////////////////
+
 
 //////////////////////////////////////////////////////////////////////////
 ////////////            READ PROMPT TEMPLATE FILE             ////////////
@@ -89,14 +195,12 @@ std::tuple<std::string, std::string, std::string> read_prompt_template_file(cons
 ////////////           /READ PROMPT TEMPLATE FILE             ////////////
 //////////////////////////////////////////////////////////////////////////
 
-void save_chat_log(std::string save_log, std::string prompt, std::string answer) {
-  std::ofstream logfile(save_log, std::ios::app);
-  if (logfile.is_open()) {
-    logfile << prompt;
-    logfile << answer+"\n";
-    logfile.close();
-    }
-}
+
+
+
+//////////////////////////////////////////////////////////////////////////
+////////////             CONSOLE COLOR FUNCTION               ////////////
+//////////////////////////////////////////////////////////////////////////
 
 
 void set_console_color(ConsoleState &con_st, ConsoleColor color) {
@@ -121,14 +225,15 @@ void set_console_color(ConsoleState &con_st, ConsoleColor color) {
     }
 }
 
-std::string random_prompt(int32_t seed) {
-    const std::vector<std::string> prompts = {
-        "So", "Once upon a time", "When", "The", "After", "If", "import", "He", "She", "They"
-    };
+//////////////////////////////////////////////////////////////////////////
+////////////            /CONSOLE COLOR FUNCTION               ////////////
+//////////////////////////////////////////////////////////////////////////
 
-    std::mt19937 rng(seed);
-    return prompts[rng() % prompts.size()];
-}
+
+//////////////////////////////////////////////////////////////////////////
+////////////                PARSE PARAMETERS                  ////////////
+//////////////////////////////////////////////////////////////////////////
+
 
 void print_usage(int argc, char** argv, const chatParams& params) {
     // Print usage information
@@ -158,6 +263,8 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "  --repeat_penalty   N  repeat_penalty (default: %.1f)\n", params.repeat_penalty);
     fprintf(stderr, "  --repeat_last_n    N  last n tokens to penalize  (default: %d)\n", params.repeat_last_n);
     fprintf(stderr, "  --context_erase    N  percent of context to erase  (default: %.1f)\n", params.context_erase);
+    fprintf(stderr, "  --openai_api_key  FNAME or $OPENAI_API_KEY\n");
+    fprintf(stderr, "                        Optional: for -m \"gpt-3-turbo\" or -m \"gpt-4\" (default: empty/no)\n");
     fprintf(stderr, "  -j,   --load_json FNAME\n");
     fprintf(stderr, "                        load options instead from json at FNAME (default: empty/no)\n");
     fprintf(stderr, "  --load_template   FNAME\n");
@@ -219,6 +326,8 @@ bool parse_params(int argc, char** argv, chatParams& params) {
             params.load_template = argv[++i];
         } else if (arg == "--save_log") {
             params.save_log = argv[++i];
+        } else if (arg == "--openai_api_key") {
+            params.openai_api_key = argv[++i];
         } else if (arg == "-m" || arg == "--model") {
             params.model = argv[++i];
         } else if (arg == "-h" || arg == "--help") {
@@ -233,6 +342,8 @@ bool parse_params(int argc, char** argv, chatParams& params) {
 
     return true;
 }
-
+//////////////////////////////////////////////////////////////////////////
+////////////               /PARSE PARAMETERS                  ////////////
+//////////////////////////////////////////////////////////////////////////
 
 #endif

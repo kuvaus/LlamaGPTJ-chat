@@ -56,9 +56,13 @@ llmodel_model llmodel_model_create(const char *model_path) {
     uint32_t magic;
     llmodel_model model;
     FILE *f = fopen(model_path, "rb");
-    fread(&magic, sizeof(magic), 1, f);
+    if (f == NULL) {
+        fprintf(stderr, "Unable to open model file\n");
+        return nullptr;
+    }
 
-    if (magic == 0x67676d6c) { model = llmodel_gptj_create();  }
+    fread(&magic, sizeof(magic), 1, f);
+    if      (magic == 0x67676d6c) { model = llmodel_gptj_create();  }
     else if (magic == 0x67676a74) { model = llmodel_llama_create(); }
     else if (magic == 0x67676d6d) { model = llmodel_mpt_create();   }
     else  {fprintf(stderr, "Invalid model file\n");}
@@ -67,6 +71,8 @@ llmodel_model llmodel_model_create(const char *model_path) {
 }
 
 void llmodel_model_destroy(llmodel_model model) {
+	
+	if (model == nullptr) {return;}
 
     LLModelWrapper *wrapper = reinterpret_cast<LLModelWrapper*>(model);
     const std::type_info &modelTypeInfo = typeid(*wrapper->llModel);

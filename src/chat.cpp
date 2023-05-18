@@ -1,84 +1,12 @@
 #include "./header.h"
 #include "../gpt4all-backend/llmodel_c.h"
 #include "./utils.h"
+#include "./openai.h"
 #include "./parse_json.h"
 
-//////////////////////////////////////////////////////////////////////////
-////////////                    ANIMATION                     ////////////
-//////////////////////////////////////////////////////////////////////////
-
-std::atomic<bool> stop_display{false}; 
-
-void display_frames() {
-    const char* frames[] = {".", ":", "'", ":"};
-    int frame_index = 0;
-    ConsoleState con_st;
-    con_st.use_color = true;
-    while (!stop_display) {
-        set_console_color(con_st, PROMPT);
-        std::cerr << "\r" << frames[frame_index % 4] << std::flush;
-        frame_index++;
-        set_console_color(con_st, DEFAULT);
-        if (!stop_display){
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            std::cerr << "\r" << " " << std::flush;
-            std::cerr << "\r" << std::flush;
-        }
-    }
-}
-
-void display_loading() {
-
-    while (!stop_display) {
-
-
-        for (int i=0; i < 14; i++){
-                fprintf(stdout, ".");
-                fflush(stdout);
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                if (stop_display){ break; }
-        }
-        
-         std::cout << "\r" << "               " << "\r" << std::flush;
-    }
-    std::cout << "\r" << " " << std::flush;
-
-}
-
-//////////////////////////////////////////////////////////////////////////
-////////////                   /ANIMATION                     ////////////
-//////////////////////////////////////////////////////////////////////////
-
-
-//////////////////////////////////////////////////////////////////////////
-////////////                 CHAT FUNCTIONS                   ////////////
-//////////////////////////////////////////////////////////////////////////
-
-
-
-std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& input) {
-    set_console_color(con_st, USER_INPUT);
-
-    std::cout << "\n> ";
-    std::getline(std::cin, input);
-    set_console_color(con_st, DEFAULT);
-
-    if (input == "exit" || input == "quit") {       
-        llmodel_model_destroy(model);
-        exit(0);
-    }
-
-    return input;
-}
 
 std::string hashstring = "";
 std::string answer = "";
-
-//////////////////////////////////////////////////////////////////////////
-////////////                /CHAT FUNCTIONS                   ////////////
-//////////////////////////////////////////////////////////////////////////
-
-
 
 //////////////////////////////////////////////////////////////////////////
 ////////////                  MAIN PROGRAM                    ////////////
@@ -137,6 +65,10 @@ int main(int argc, char* argv[]) {
 
     //animation
     std::future<void> future;
+
+    //ChatGPT interaction
+    if(params.model == "gpt-3.5-turbo" || params.model == "gpt-4") { openai_chatgpt(params, con_st); }
+
     stop_display = true;
     if(params.use_animation) {stop_display = false; future = std::async(std::launch::async, display_loading);}
 
@@ -242,10 +174,10 @@ int main(int argc, char* argv[]) {
     llmodel_setThreadCount(model, params.n_threads);
 
     std::string input = "";
-
+ 
     //main chat loop.
     if (!params.no_interactive) {
-        input = get_input(con_st, model, input);
+        input = get_input(con_st, input, model);
 
         //Interactive mode. We have a prompt.
         if (params.prompt != "") {
@@ -267,7 +199,7 @@ int main(int argc, char* argv[]) {
 
         while (!params.run_once) {
             answer = ""; //New prompt. We stored previous answer in memory so clear it.
-            input = get_input(con_st, model, input);
+            input = get_input(con_st, input, model);
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(), 
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
