@@ -1,8 +1,8 @@
 cmake_minimum_required (VERSION 3.2)
 
 if(not APPLE)
-find_package(CURL REQUIRED)
-endif
+  find_package(CURL REQUIRED)
+endif()
 
 if(APPLE)
   option(BUILD_UNIVERSAL "Build a Universal binary on macOS" ON)
