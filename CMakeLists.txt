@@ -101,13 +101,13 @@ endif ()
 
 # Include static libs for compatibility:
 if(APPLE)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-search_paths_first -lSystem -lcurl -lcurlpp")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-search_paths_first -lSystem -lcurl")
 elseif(UNIX)
     if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static -lcurl")
     endif()
 elseif(WIN32)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static -lcurl -lcurlpp")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static -lcurl")
 endif()
 
 # Generate a header file with the version number
