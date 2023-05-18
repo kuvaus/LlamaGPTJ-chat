@@ -1,5 +1,9 @@
 cmake_minimum_required (VERSION 3.2)
 
+if(!APPLE)
+  find_package(CURL REQUIRED)
+endif()
+
 if(APPLE)
   option(BUILD_UNIVERSAL "Build a Universal binary on macOS" ON)
   if(BUILD_UNIVERSAL)
@@ -21,7 +25,6 @@ set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS "on")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-set(BUILD_SHARED_LIBS ON FORCE)
 
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
@@ -54,7 +57,7 @@ elseif(UNIX)
     option(LLAMA_AVX512                 "llama: enable AVX512"                                  OFF)
     option(LLAMA_AVX512_VBMI            "llama: enable AVX512-VBMI"                             OFF)
     option(LLAMA_AVX512_VNNI            "llama: enable AVX512-VNNI"                             OFF)
-    #set(BUILD_SHARED_LIBS ON FORCE)
+    set(BUILD_SHARED_LIBS ON FORCE)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mno-outline-atomics")
     endif()
 endif()
@@ -98,16 +101,13 @@ endif ()
 
 # Include static libs for compatibility:
 if(APPLE)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lcurl")
-  #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-search_paths_first -lSystem -lcurl")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-search_paths_first -lSystem -lcurl -lcurlpp")
 elseif(UNIX)
     if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lcurl")
-        #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static -lcurl")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static -lcurl")
     endif()
 elseif(WIN32)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lcurl")
-  #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static -lcurl")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static -lcurl -lcurlpp")
 endif()
 
 # Generate a header file with the version number
