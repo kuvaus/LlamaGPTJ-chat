@@ -31,7 +31,7 @@ jobs:
       with:
           submodules: recursive
 
-- name: "Install libcurl dependencies"
+    - name: "Install libcurl dependencies"
       if: matrix.config.os == 'ubuntu-latest'
       run: sudo apt install -y libssl-dev libcurl4-openssl-dev
       if: matrix.config.os == 'windows-latest'
