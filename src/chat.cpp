@@ -67,6 +67,7 @@ int main(int argc, char* argv[]) {
     std::future<void> future;
 
     //ChatGPT interaction
+    //if true, the program will switch to  openai_chatgpt function from openai.h
     if(params.model == "gpt-3.5-turbo" || params.model == "gpt-4") { openai_chatgpt(params, con_st); }
 
     stop_display = true;

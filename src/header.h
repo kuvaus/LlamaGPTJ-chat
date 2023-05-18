@@ -23,9 +23,9 @@
 
 //http-server
 //#define CPPHTTPLIB_OPENSSL_SUPPORT
-#include "yhirose_cpp_httplib.h"
-#include "nlohmann_json.h"
-#include "olrea_openai_cpp.h"
+#include "../deps/yhirose_cpp_httplib.h"
+#include "../deps/nlohmann_json.h"
+#include "../deps/olrea_openai_cpp.h"
 
 //For Windows paths
 //Commented out to support really old xcode
