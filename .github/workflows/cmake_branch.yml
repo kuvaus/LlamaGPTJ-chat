@@ -52,7 +52,11 @@ jobs:
           mv chat-msvc.exe chat-windows-latest-msvc.exe
         }
       shell: pwsh
-      
+
+    - name: Install libcurl4-openssl-dev
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt-get install -y libcurl4-openssl-dev
+
     - name: Setup MinGW
       if: matrix.os == 'windows-latest'
       run: |
@@ -69,10 +73,6 @@ jobs:
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DAVX2=${{ matrix.instructions == 'avx2' && 'ON' || 'OFF' }}
         }
       shell: pwsh
-
-    - name: Install libcurl4-openssl-dev
-      if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get install -y libcurl4-openssl-dev
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
