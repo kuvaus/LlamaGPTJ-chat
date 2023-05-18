@@ -31,8 +31,7 @@ jobs:
       with:
           submodules: recursive
 
-    - name: Install libcurl4-openssl-dev
-      if: matrix.os == 'ubuntu-latest'
+    - name: Install curl
       run: sudo apt-get install -y libcurl4-openssl-dev
 
     - name: Configure CMake
