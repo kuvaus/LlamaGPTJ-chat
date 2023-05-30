@@ -134,6 +134,8 @@ options:
                         load prompt template from a txt file at FNAME (default: empty/no)
   --save_log        FNAME
                         save chat log to a file at FNAME (default: empty/no)
+  --load_log        FNAME
+                        load chat log from a file at FNAME (default: empty/no)
   -m FNAME, --model FNAME
                         model path (current: ./models/ggml-vicuna-13b-1.1-q4_2.bin)
 ```
