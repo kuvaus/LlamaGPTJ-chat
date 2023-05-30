@@ -90,7 +90,8 @@ void get_params_from_json(chatParams& params) {
         params.load_template = removeQuotes(parsed["load_template"]);   
     if (parsed.find("save_log") != parsed.end())
         params.load_template = removeQuotes(parsed["save_log"]);
-}
+    if (parsed.find("load_log") != parsed.end())
+        params.load_template = removeQuotes(parsed["load_log"]);}
 
 
 #endif

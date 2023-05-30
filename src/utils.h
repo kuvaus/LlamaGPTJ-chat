@@ -99,6 +99,20 @@ void save_chat_log(std::string save_log, std::string prompt, std::string answer)
 }
 
 
+std::string read_chat_log(std::string load_log) {
+
+    std::ifstream ifs(load_log);
+    std::string content((std::istreambuf_iterator<char>(ifs)),
+                         std::istreambuf_iterator<char>());
+    
+    if (content.length() > 4000) {
+    	return content.substr(content.length() - 4000);
+    } else {
+    	return content;
+    }
+}
+
+
 void set_console_color(ConsoleState &con_st, ConsoleColor color) {
     if (con_st.use_color && con_st.color != color) {
         //Windows handles colors differently.

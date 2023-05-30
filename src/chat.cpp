@@ -199,7 +199,12 @@ int main(int argc, char* argv[]) {
     if (params.load_template != "") {
         std::tie(default_prefix, default_header, default_footer) = read_prompt_template_file(params.load_template);
     }
-
+    
+    //load chat log from a file
+    if (params.load_log != "") {
+        default_prefix = default_prefix + read_chat_log(params.load_log);
+    }
+    
     //////////////////////////////////////////////////////////////////////////
     ////////////            PROMPT LAMBDA FUNCTIONS               ////////////
     //////////////////////////////////////////////////////////////////////////
