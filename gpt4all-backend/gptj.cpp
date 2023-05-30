@@ -867,7 +867,8 @@ void GPTJ::setThreadCount(int32_t n_threads) {
     d_ptr->n_threads = n_threads;
 }
 
-int32_t GPTJ::threadCount() {
+int32_t GPTJ::threadCount() const
+{
     return d_ptr->n_threads;
 }
 
@@ -982,7 +983,7 @@ void GPTJ::prompt(const std::string &prompt,
     std::string cachedResponse;
     std::vector<gpt_vocab::id> cachedTokens;
     std::unordered_set<std::string> reversePrompts
-        = { "### Instruction", "### Prompt", "### Response", "### Human", "### Assistant" };
+        = { "### Instruction", "### Prompt", "### Response", "### Human", "### Assistant", "### Context" };
 
     // predict next tokens
     int32_t totalPredictions = 0;

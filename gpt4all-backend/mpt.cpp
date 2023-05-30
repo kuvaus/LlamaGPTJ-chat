@@ -792,7 +792,8 @@ void MPT::setThreadCount(int32_t n_threads) {
     d_ptr->n_threads = n_threads;
 }
 
-int32_t MPT::threadCount() {
+int32_t MPT::threadCount() const
+{
     return d_ptr->n_threads;
 }
 
@@ -907,7 +908,7 @@ void MPT::prompt(const std::string &prompt,
     std::string cachedResponse;
     std::vector<int> cachedTokens;
     std::unordered_set<std::string> reversePrompts
-        = { "### Instruction", "### Prompt", "### Response", "### Human", "### Assistant" };
+        = { "### Instruction", "### Prompt", "### Response", "### Human", "### Assistant", "### Context" };
 
     // predict next tokens
     int32_t totalPredictions = 0;

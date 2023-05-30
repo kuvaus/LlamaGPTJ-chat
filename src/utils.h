@@ -164,6 +164,8 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "                        load prompt template from a txt file at FNAME (default: empty/no)\n");
     fprintf(stderr, "  --save_log        FNAME\n");
     fprintf(stderr, "                        save chat log to a file at FNAME (default: empty/no)\n");
+    fprintf(stderr, "  --load_log        FNAME\n");
+    fprintf(stderr, "                        load chat log from a file at FNAME (default: empty/no)\n");
     fprintf(stderr, "  -m FNAME, --model FNAME\n");
     fprintf(stderr, "                        model path (current: %s)\n", params.model.c_str());
     fprintf(stderr, "\n");
@@ -219,6 +221,8 @@ bool parse_params(int argc, char** argv, chatParams& params) {
             params.load_template = argv[++i];
         } else if (arg == "--save_log") {
             params.save_log = argv[++i];
+        } else if (arg == "--load_log") {
+            params.load_log = argv[++i];
         } else if (arg == "-m" || arg == "--model") {
             params.model = argv[++i];
         } else if (arg == "-h" || arg == "--help") {

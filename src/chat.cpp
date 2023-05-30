@@ -205,7 +205,7 @@ int main(int argc, char* argv[]) {
     //////////////////////////////////////////////////////////////////////////
 
 
-    auto prompt_callback = [](int32_t token_id, const char *promptchars)  {
+    auto prompt_callback = [](int32_t token_id)  {
 	    // You can handle prompt here if needed
 	    return true;
 	};
