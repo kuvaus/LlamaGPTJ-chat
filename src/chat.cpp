@@ -194,7 +194,7 @@ int main(int argc, char* argv[]) {
     std::string default_prefix = "### Instruction:\n The prompt below is a question to answer, a task to complete, or a conversation to respond to; decide which and write an appropriate response.";
     std::string default_header = "\n### Prompt: ";
     std::string default_footer = "\n### Response: ";
-    
+
     //load prompt template from file instead
     if (params.load_template != "") {
         std::tie(default_prefix, default_header, default_footer) = read_prompt_template_file(params.load_template);
@@ -202,7 +202,13 @@ int main(int argc, char* argv[]) {
     
     //load chat log from a file
     if (params.load_log != "") {
-        default_prefix = default_prefix + read_chat_log(params.load_log);
+    	if (params.prompt == "") {
+        	params.prompt = default_prefix + read_chat_log(params.load_log) + default_header;
+        } else {
+        	params.prompt = default_prefix + read_chat_log(params.load_log) + default_header + params.prompt;
+        }
+    } else {
+    	params.prompt = default_prefix + default_header + params.prompt;
     }
     
     //////////////////////////////////////////////////////////////////////////
@@ -255,10 +261,10 @@ int main(int argc, char* argv[]) {
         //Interactive mode. We have a prompt.
         if (params.prompt != "") {
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
-            llmodel_prompt(model, (default_prefix + default_header + params.prompt + " " + input + default_footer).c_str(),
+            llmodel_prompt(model, (params.prompt + " " + input + default_footer).c_str(),
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
-            if (params.save_log != ""){ save_chat_log((default_prefix + default_header + params.prompt + " " + input + default_footer).c_str(), params.save_log, answer.c_str()); }
+            if (params.save_log != ""){ save_chat_log(params.save_log, (params.prompt + " " + input + default_footer).c_str(), answer.c_str()); }
 
         //Interactive mode. Else get prompt from input.
         } else {
@@ -284,10 +290,10 @@ int main(int argc, char* argv[]) {
     //No-interactive mode. Get the answer once from prompt and print it.
     } else {
         if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
-        llmodel_prompt(model, (default_prefix + default_header + params.prompt + default_footer).c_str(), 
+        llmodel_prompt(model, (params.prompt + default_footer).c_str(), 
         prompt_callback, response_callback, recalculate_callback, &prompt_context);
         if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
-        if (params.save_log != ""){ save_chat_log(params.save_log, (default_prefix + default_header + params.prompt + default_footer).c_str(), answer.c_str()); }
+        if (params.save_log != ""){ save_chat_log(params.save_log, (params.prompt + default_footer).c_str(), answer.c_str()); }
         std::cout << std::endl;
     }
 
