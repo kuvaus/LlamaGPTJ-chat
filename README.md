@@ -107,6 +107,7 @@ usage: ./bin/chat [options]
 A simple chat program for GPT-J, LLaMA, and MPT models.
 You can set specific initial prompt with the -p flag.
 Runs default in interactive and continuous mode.
+Type 'resetchat' to reset the chat context.
 Type 'quit', 'exit' or, 'Ctrl+C' to quit.
 
 options:
