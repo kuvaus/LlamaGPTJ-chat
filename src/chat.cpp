@@ -56,18 +56,34 @@ void display_loading() {
 
 
 
-std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& input) {
+std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& input, chatParams params, llmodel_prompt_context &prompt_context) {
     set_console_color(con_st, USER_INPUT);
 
     std::cout << "\n> ";
     std::getline(std::cin, input);
     set_console_color(con_st, DEFAULT);
-
+    
+    if (input == "resetchat") {       
+        prompt_context.logits = params.logits;
+        prompt_context.logits_size = params.logits_size;
+        prompt_context.tokens = params.tokens;
+        prompt_context.tokens_size = params.tokens_size;
+        prompt_context.n_past = params.n_past;
+        prompt_context.n_ctx = params.n_ctx;
+        input = "";
+        set_console_color(con_st, PROMPT);
+        std::cout << "Chat context reset.";
+        set_console_color(con_st, USER_INPUT);
+        std::cout << "\n> ";
+        std::getline(std::cin, input);
+        set_console_color(con_st, DEFAULT);
+    }
+    
     if (input == "exit" || input == "quit") {       
         llmodel_model_destroy(model);
         exit(0);
     }
-
+    
     return input;
 }
 
@@ -256,7 +272,7 @@ int main(int argc, char* argv[]) {
 
     //main chat loop.
     if (!params.no_interactive) {
-        input = get_input(con_st, model, input);
+        input = get_input(con_st, model, input, params, prompt_context);
 
         //Interactive mode. We have a prompt.
         if (params.prompt != "") {
@@ -278,7 +294,7 @@ int main(int argc, char* argv[]) {
 
         while (!params.run_once) {
             answer = ""; //New prompt. We stored previous answer in memory so clear it.
-            input = get_input(con_st, model, input);
+            input = get_input(con_st, model, input, params, prompt_context);
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(), 
             prompt_callback, response_callback, recalculate_callback, &prompt_context);

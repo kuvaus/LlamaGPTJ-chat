@@ -146,6 +146,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "A simple chat program for GPT-J, LLaMA, and MPT models.\n");
     fprintf(stderr, "You can set specific initial prompt with the -p flag.\n");
     fprintf(stderr, "Runs default in interactive and continuous mode.\n");
+    fprintf(stderr, "Type 'resetchat' to reset the chat context.\n");
     fprintf(stderr, "Type 'quit', 'exit' or, 'Ctrl+C' to quit.\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "options:\n");
