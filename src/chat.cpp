@@ -63,13 +63,16 @@ std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& in
     std::getline(std::cin, input);
     set_console_color(con_st, DEFAULT);
     
-    if (input == "resetchat") {       
+    if (input == "resetchat") {
+    	//reset the logits, tokens and past conversation
         prompt_context.logits = params.logits;
         prompt_context.logits_size = params.logits_size;
         prompt_context.tokens = params.tokens;
         prompt_context.tokens_size = params.tokens_size;
         prompt_context.n_past = params.n_past;
         prompt_context.n_ctx = params.n_ctx;
+        
+        //get new input
         input = "";
         set_console_color(con_st, PROMPT);
         std::cout << "Chat context reset.";
