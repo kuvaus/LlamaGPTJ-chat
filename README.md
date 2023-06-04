@@ -143,14 +143,17 @@ options:
 ## Useful features
 Here are some handy features and details on how to achieve them using command line options.
 
-### Save chat log and read output from other apps
-By default, the program prints the chat to standard (stdout) output, so if you're including the program into your app, it only needs to read stdout. You can also save the whole chat log to a text file with `--save_log` option.
+### Save/load chat log and read output from other apps
+By default, the program prints the chat to standard (stdout) output, so if you're including the program into your app, it only needs to read stdout. You can also save the whole chat log to a text file with `--save_log` option. There's an elementary way to remember your past conversation by simply loading the saved chat log with `--load_log` option when you start a new session.
 
 ### Run the program once without user interaction
 If you only need the program to run once without any user interactions, one way is to set prompt with `-p "prompt"` and using `--no-interactive` and `--no-animation` flags. The program will read the prompt, print the answer, and close.
 
 ### Add AI personalities and characters
-If you want a personality for your AI, you can change `prompt_template_sample.txt` and use `--load_template` to load the modified file. The only constant is that your input during chat will be put on the `%1` line. Instructions, prompt, response, and everything else can be replaced any way you want. Having different `personality_template.txt` files is an easy way to add different AI characters.
+If you want a personality for your AI, you can change `prompt_template_sample.txt` and use `--load_template` to load the modified file. The only constant is that your input during chat will be put on the `%1` line. Instructions, prompt, response, and everything else can be replaced any way you want. Having different `personality_template.txt` files is an easy way to add different AI characters. With _some_ models, giving both AI and user names instead of `Prompt:` and `Response:`, can make the conversation flow more naturally as the AI tries to mimic a conversation between two people.
+
+### Ability to reset chat context
+You can reset the chat during at any time during chatting by typing `resetchat` in the input field. This will clear the AI's memory of past conversations, logits, and tokens. You can then start the chat from a blank slate without having to reload the whole model again.
 
 ### Load all parameters using JSON
 You can also fetch parameters from a json file with `--load_json "/path/to/file.json"` flag. Different models might perform better or worse with different input parameters so using json files is a handy way to store and load all the settings at once. The JSON file loader is designed to be simple in order to prevent any external dependencies, and as a result, the JSON file must follow a specific format. Here is a simple example:
