@@ -72,14 +72,10 @@ std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& in
         prompt_context.n_past = params.n_past;
         prompt_context.n_ctx = params.n_ctx;
         
-        //get new input
-        input = "";
+        //get new input using recursion
         set_console_color(con_st, PROMPT);
         std::cout << "Chat context reset.";
-        set_console_color(con_st, USER_INPUT);
-        std::cout << "\n> ";
-        std::getline(std::cin, input);
-        set_console_color(con_st, DEFAULT);
+        return get_input(con_st, model, input, params, prompt_context);
     }
     
     if (input == "exit" || input == "quit") {       
