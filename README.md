@@ -107,7 +107,9 @@ usage: ./bin/chat [options]
 A simple chat program for GPT-J, LLaMA, and MPT models.
 You can set specific initial prompt with the -p flag.
 Runs default in interactive and continuous mode.
-Type 'resetchat' to reset the chat context.
+Type '/reset' to reset the chat context.
+Type '/save','/load' to save network state into a binary file.
+Type '/help' to show this help dialog.
 Type 'quit', 'exit' or, 'Ctrl+C' to quit.
 
 options:
@@ -137,6 +139,8 @@ options:
                         save chat log to a file at FNAME (default: empty/no)
   --load_log        FNAME
                         load chat log from a file at FNAME (default: empty/no)
+  --state           FNAME
+                        save/load model state binary at FNAME (current: ./model_state.bin)
   -m FNAME, --model FNAME
                         model path (current: ./models/ggml-vicuna-13b-1.1-q4_2.bin)
 ```

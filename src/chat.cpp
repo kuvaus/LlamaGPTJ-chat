@@ -55,8 +55,57 @@ void display_loading() {
 //////////////////////////////////////////////////////////////////////////
 
 
+void save_state_to_binary(llmodel_model &model, uint8_t *dest, std::string filename) {
+  // create an output file stream
+  std::ofstream outfile;
+  // open the file in binary mode
+  outfile.open(filename, std::ios::binary);
 
-std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& input, chatParams params, llmodel_prompt_context &prompt_context) {
+  // check if the file stream is open
+  if (!outfile.is_open()) {
+    std::cerr << "Error opening file " << filename << std::endl;
+    return;
+  }
+
+  // write the model data to the file stream
+  uint64_t copied_bytes = llmodel_save_state_data(model, dest);
+  outfile.write(reinterpret_cast<char *>(dest), copied_bytes);
+
+  // close the file stream
+  outfile.close();
+}
+
+void load_state_from_binary(llmodel_model model, const std::string& filename) {
+  // create an input file stream
+  std::ifstream infile;
+  // open the file in binary mode
+  infile.open(filename, std::ios::binary);
+
+  // check if the file stream is open
+  if (!infile.is_open()) {
+    std::cerr << "Error opening file " << filename << std::endl;
+    return;
+  }
+
+  // get the size of the file
+  infile.seekg(0, std::ios::end);
+  uint64_t file_size = infile.tellg();
+  infile.seekg(0, std::ios::beg);
+
+  // allocate a buffer to hold the file data
+  uint8_t* buffer = new uint8_t[file_size];
+
+  // read the file data into the buffer
+  infile.read(reinterpret_cast<char*>(buffer), file_size);
+  infile.close();
+
+  // restore the internal state of the model using the buffer data
+  llmodel_restore_state_data(model, buffer);
+  delete[] buffer;
+}
+
+
+std::string get_input(ConsoleState& con_st, llmodel_model& model, std::string& input, chatParams params, llmodel_prompt_context &prompt_context) {
     set_console_color(con_st, USER_INPUT);
 
     std::cout << "\n> ";
@@ -77,7 +126,44 @@ std::string get_input(ConsoleState& con_st, llmodel_model model, std::string& in
         std::cout << "Chat context reset.";
         return get_input(con_st, model, input, params, prompt_context);
     }
+    if (input == "/save"){
+    	uint64_t model_size = llmodel_get_state_size(model);
+		uint8_t *dest = new uint8_t[model_size];
+    	save_state_to_binary(model, dest, params.state);
+    	delete[] dest;
+    	
+    	//get new input using recursion
+        set_console_color(con_st, PROMPT);
+        std::cout << "Model data saved to: " << params.state << " size: " << floor(model_size/10000000)/100.0 << " Gb";
+        return get_input(con_st, model, input, params, prompt_context);
+    }
     
+    if (input == "/load"){
+    	//reset the logits, tokens and past conversation
+        prompt_context.logits = params.logits;
+        prompt_context.logits_size = params.logits_size;
+        prompt_context.tokens = params.tokens;
+        prompt_context.tokens_size = params.tokens_size;
+        prompt_context.n_past = params.n_past;
+        prompt_context.n_ctx = params.n_ctx;
+        
+    	load_state_from_binary(model, params.state);
+    	uint64_t model_size = llmodel_get_state_size(model);
+    	
+    	//get new input using recursion
+        set_console_color(con_st, PROMPT);
+        std::cout << "Model data loaded from: " << params.state << " size: " << floor(model_size/10000000)/100.0 << " Gb";
+        return get_input(con_st, model, input, params, prompt_context);
+    }
+    
+    if (input == "/help"){
+    	set_console_color(con_st, DEFAULT);
+    	std::cout << std::endl;
+    	char **emptyargv = (char**)calloc(1, sizeof(char*));
+    	print_usage(0, emptyargv, params);
+        return get_input(con_st, model, input, params, prompt_context);
+    }
+        
     if (input == "exit" || input == "quit") {       
         llmodel_model_destroy(model);
         exit(0);

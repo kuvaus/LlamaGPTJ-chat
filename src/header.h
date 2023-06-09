@@ -88,7 +88,7 @@ struct chatParams {
         std::string load_json = "";         //json file location
         std::string save_log = "";          //saved chat log file location
         std::string load_log = "";          //loaded chat log file location
-
+        std::string state = "./model_state.bin";//model state binary location
 };
 
 enum ConsoleColor {

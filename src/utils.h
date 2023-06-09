@@ -146,7 +146,9 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "A simple chat program for GPT-J, LLaMA, and MPT models.\n");
     fprintf(stderr, "You can set specific initial prompt with the -p flag.\n");
     fprintf(stderr, "Runs default in interactive and continuous mode.\n");
-    fprintf(stderr, "Type 'resetchat' to reset the chat context.\n");
+    fprintf(stderr, "Type '/reset' to reset the chat context.\n");
+    fprintf(stderr, "Type '/save','/load' to save network state into a binary file.\n");
+    fprintf(stderr, "Type '/help' to show this help dialog.\n");
     fprintf(stderr, "Type 'quit', 'exit' or, 'Ctrl+C' to quit.\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "options:\n");
@@ -176,6 +178,8 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "                        save chat log to a file at FNAME (default: empty/no)\n");
     fprintf(stderr, "  --load_log        FNAME\n");
     fprintf(stderr, "                        load chat log from a file at FNAME (default: empty/no)\n");
+    fprintf(stderr, "  --state           FNAME\n");
+    fprintf(stderr, "                        save/load model state binary at FNAME (current: %s)\n", params.state.c_str());
     fprintf(stderr, "  -m FNAME, --model FNAME\n");
     fprintf(stderr, "                        model path (current: %s)\n", params.model.c_str());
     fprintf(stderr, "\n");
@@ -233,6 +237,8 @@ bool parse_params(int argc, char** argv, chatParams& params) {
             params.save_log = argv[++i];
         } else if (arg == "--load_log") {
             params.load_log = argv[++i];
+        } else if (arg == "--state") {
+            params.state = argv[++i];
         } else if (arg == "-m" || arg == "--model") {
             params.model = argv[++i];
         } else if (arg == "-h" || arg == "--help") {
