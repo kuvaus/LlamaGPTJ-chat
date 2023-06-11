@@ -55,7 +55,7 @@ void display_loading() {
 //////////////////////////////////////////////////////////////////////////
 
 
-void save_state_to_binary(llmodel_model &model, uint8_t *dest, std::string filename) {
+void save_state_to_binary(llmodel_model& model, uint8_t *dest, std::string filename) {
   // create an output file stream
   std::ofstream outfile;
   // open the file in binary mode
@@ -75,7 +75,7 @@ void save_state_to_binary(llmodel_model &model, uint8_t *dest, std::string filen
   outfile.close();
 }
 
-void load_state_from_binary(llmodel_model model, const std::string& filename) {
+void load_state_from_binary(llmodel_model& model, const std::string& filename) {
   // create an input file stream
   std::ifstream infile;
   // open the file in binary mode
@@ -102,17 +102,18 @@ void load_state_from_binary(llmodel_model model, const std::string& filename) {
   // restore the internal state of the model using the buffer data
   llmodel_restore_state_data(model, buffer);
   delete[] buffer;
+  return;
 }
 
 
-std::string get_input(ConsoleState& con_st, llmodel_model& model, std::string& input, chatParams params, llmodel_prompt_context &prompt_context) {
+std::string get_input(ConsoleState& con_st, std::string& input, chatParams &params, llmodel_prompt_context &prompt_context, llmodel_model& model) {
     set_console_color(con_st, USER_INPUT);
 
     std::cout << "\n> ";
     std::getline(std::cin, input);
     set_console_color(con_st, DEFAULT);
     
-    if (input == "resetchat") {
+    if (input == "/reset") {
     	//reset the logits, tokens and past conversation
         prompt_context.logits = params.logits;
         prompt_context.logits_size = params.logits_size;
@@ -124,7 +125,7 @@ std::string get_input(ConsoleState& con_st, llmodel_model& model, std::string& i
         //get new input using recursion
         set_console_color(con_st, PROMPT);
         std::cout << "Chat context reset.";
-        return get_input(con_st, model, input, params, prompt_context);
+        return get_input(con_st, input, params, prompt_context, model);
     }
     if (input == "/save"){
     	uint64_t model_size = llmodel_get_state_size(model);
@@ -135,7 +136,7 @@ std::string get_input(ConsoleState& con_st, llmodel_model& model, std::string& i
     	//get new input using recursion
         set_console_color(con_st, PROMPT);
         std::cout << "Model data saved to: " << params.state << " size: " << floor(model_size/10000000)/100.0 << " Gb";
-        return get_input(con_st, model, input, params, prompt_context);
+        return get_input(con_st, input, params, prompt_context, model);
     }
     
     if (input == "/load"){
@@ -153,7 +154,7 @@ std::string get_input(ConsoleState& con_st, llmodel_model& model, std::string& i
     	//get new input using recursion
         set_console_color(con_st, PROMPT);
         std::cout << "Model data loaded from: " << params.state << " size: " << floor(model_size/10000000)/100.0 << " Gb";
-        return get_input(con_st, model, input, params, prompt_context);
+        return get_input(con_st, input, params, prompt_context, model);
     }
     
     if (input == "/help"){
@@ -161,10 +162,10 @@ std::string get_input(ConsoleState& con_st, llmodel_model& model, std::string& i
     	std::cout << std::endl;
     	char **emptyargv = (char**)calloc(1, sizeof(char*));
     	print_usage(0, emptyargv, params);
-        return get_input(con_st, model, input, params, prompt_context);
+        return get_input(con_st, input, params, prompt_context, model);
     }
         
-    if (input == "exit" || input == "quit") {       
+    if (input == "exit" || input == "quit" || input == "/exit" || input == "/quit") {       
         llmodel_model_destroy(model);
         exit(0);
     }
