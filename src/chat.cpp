@@ -358,7 +358,7 @@ int main(int argc, char* argv[]) {
 
     //main chat loop.
     if (!params.no_interactive) {
-        input = get_input(con_st, model, input, params, prompt_context);
+        input = get_input(con_st, input, params, prompt_context, model);
 
         //Interactive mode. We have a prompt.
         if (params.prompt != "") {
@@ -380,7 +380,7 @@ int main(int argc, char* argv[]) {
 
         while (!params.run_once) {
             answer = ""; //New prompt. We stored previous answer in memory so clear it.
-            input = get_input(con_st, model, input, params, prompt_context);
+            input = get_input(con_st, input, params, prompt_context, model);
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(), 
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
