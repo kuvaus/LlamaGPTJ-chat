@@ -160,7 +160,7 @@ If you only need the program to run once without any user interactions, one way 
 If you want a personality for your AI, you can change `prompt_template_sample.txt` and use `--load_template` to load the modified file. The only constant is that your input during chat will be put on the `%1` line. Instructions, prompt, response, and everything else can be replaced any way you want. Having different `personality_template.txt` files is an easy way to add different AI characters. With _some_ models, giving both AI and user names instead of `Prompt:` and `Response:`, can make the conversation flow more naturally as the AI tries to mimic a conversation between two people.
 
 ### Ability to reset chat context
-You can reset the chat during at any time during chatting by typing `/reset` in the input field. This will clear the AI's memory of past conversations, logits, and tokens. You can then start the chat from a blank slate without having to reload the whole model again.
+You can reset the chat at any time during chatting by typing `/reset` in the input field. This will clear the AI's memory of past conversations, logits, and tokens. You can then start the chat from a blank slate without having to reload the whole model again.
 
 ### Load all parameters using JSON
 You can also fetch parameters from a json file with `--load_json "/path/to/file.json"` flag. Different models might perform better or worse with different input parameters so using json files is a handy way to store and load all the settings at once. The JSON file loader is designed to be simple in order to prevent any external dependencies, and as a result, the JSON file must follow a specific format. Here is a simple example:
