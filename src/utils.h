@@ -107,6 +107,12 @@ std::string read_chat_log(std::string load_log) {
     return content;
 }
 
+std::string pathname_directory(const std::string &pathname)
+{
+    std::size_t len = pathname.find_last_of("/\\");
+    return len == std::string::npos ? "": pathname.substr(0, len);
+}
+
 
 void set_console_color(ConsoleState &con_st, ConsoleColor color) {
     if (con_st.use_color && con_st.color != color) {
@@ -258,7 +264,9 @@ bool parse_params(int argc, char** argv, chatParams& params) {
         }
     }
     //get path to program
-	params.path = dirname(argv[0]);
+     
+    params.path = pathname_directory(argv[0]);
+	//params.path = dirname(argv[0]);
 	params.path.append("/");
 
 	

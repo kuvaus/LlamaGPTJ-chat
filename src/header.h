@@ -20,7 +20,6 @@
 #include <regex>
 #include <cstring>
 #include <functional>
-#include <libgen.h>
 
 //For Windows paths
 //Commented out to support really old xcode
