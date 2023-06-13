@@ -131,6 +131,8 @@ options:
   --repeat_penalty   N  repeat_penalty (default: 1.1)
   --repeat_last_n    N  last n tokens to penalize  (default: 64)
   --context_erase    N  percent of context to erase  (default: 0.8)
+  --b_token             optional beginning wrap token for response (default: empty)
+  --e_token             optional end wrap token for response (default: empty)
   -j,   --load_json FNAME
                         load options instead from json at FNAME (default: empty/no)
   --load_template   FNAME
