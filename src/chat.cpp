@@ -75,7 +75,7 @@ void save_state_to_binary(llmodel_model& model, uint8_t *dest, std::string filen
   outfile.close();
 }
 
-void load_state_from_binary(llmodel_model& model, const std::string& filename,  llmodel_prompt_context & prompt_context) {
+void load_state_from_binary(llmodel_model& model, const std::string& filename) {
   // create an input file stream
   std::ifstream infile;
   // open the file in binary mode
@@ -186,9 +186,9 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
         prompt_context.n_past = params.n_past;
         prompt_context.n_ctx = params.n_ctx;
         
-    	load_state_from_binary(model, params.state, prompt_context);
-    	uint64_t model_size = llmodel_get_state_size(model);
     	prompt_context = load_ctx_from_binary(params.state);
+    	load_state_from_binary(model, params.state);
+    	uint64_t model_size = llmodel_get_state_size(model);
     	
     	//get new input using recursion
         set_console_color(con_st, PROMPT);
