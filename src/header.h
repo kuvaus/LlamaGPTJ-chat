@@ -80,6 +80,10 @@ struct chatParams {
         int32_t n_threads = std::min(4, (int32_t)std::thread::hardware_concurrency()); 
         std::string model = "./models/ggml-vicuna-13b-1.1-q4_2.bin";
         std::string prompt = "";
+        //template prefix, header, and footer
+        std::string default_prefix = "";
+        std::string default_header = "";
+        std::string default_footer = "";
         //You can toggle chat interactivity with these parameters
         bool no_interactive = false;
         bool use_animation = true;

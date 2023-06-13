@@ -182,6 +182,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "                        load chat log from a file at FNAME (default: empty/no)\n");
     fprintf(stderr, "  --state           FNAME\n");
     fprintf(stderr, "                        save/load model state binary at FNAME (current: %s)\n", params.state.c_str());
+    fprintf(stderr, "                        context is saved to FNAME.ctx (current: %s.ctx)\n", params.state.c_str());
     fprintf(stderr, "  -m FNAME, --model FNAME\n");
     fprintf(stderr, "                        model path (current: %s)\n", params.model.c_str());
     fprintf(stderr, "\n");

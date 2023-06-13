@@ -106,6 +106,42 @@ void load_state_from_binary(llmodel_model& model, const std::string& filename,  
   return;
 }
 
+void save_ctx_to_binary(llmodel_prompt_context* prompt_context, const std::string& filename) {
+	std::string context_filename = filename+".ctx";
+    // Open the binary file for writing
+    FILE* file = fopen(context_filename.c_str(), "wb");
+    if (!file) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return;
+    }
+
+    // Write the struct to the file using fwrite
+    size_t size = sizeof(llmodel_prompt_context);
+    fwrite(prompt_context, sizeof(llmodel_prompt_context), 1, file);
+
+    // Close the file
+    fclose(file);
+}
+
+llmodel_prompt_context load_ctx_from_binary(const std::string& filename) {
+	std::string context_filename = filename+".ctx";
+    // Open the binary file for reading
+    FILE* file = fopen(context_filename.c_str(), "rb");
+    if (!file) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // Read the struct from the file using fread
+    llmodel_prompt_context prompt_context;
+    size_t size = sizeof(llmodel_prompt_context);
+    fread(&prompt_context, sizeof(llmodel_prompt_context), 1, file);
+
+    // Close the file
+    fclose(file);
+
+    return prompt_context;
+}
 
 std::string get_input(ConsoleState& con_st, std::string& input, chatParams &params, llmodel_prompt_context &prompt_context, llmodel_model& model) {
     set_console_color(con_st, USER_INPUT);
@@ -133,6 +169,7 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
 		uint8_t *dest = new uint8_t[model_size];
     	save_state_to_binary(model, dest, params.state);
     	delete[] dest;
+    	save_ctx_to_binary(&prompt_context, params.state);
     	
     	//get new input using recursion
         set_console_color(con_st, PROMPT);
@@ -151,6 +188,7 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
         
     	load_state_from_binary(model, params.state, prompt_context);
     	uint64_t model_size = llmodel_get_state_size(model);
+    	prompt_context = load_ctx_from_binary(params.state);
     	
     	//get new input using recursion
         set_console_color(con_st, PROMPT);
