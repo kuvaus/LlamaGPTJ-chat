@@ -141,9 +141,9 @@ options:
                         save chat log to a file at FNAME (default: empty/no)
   --load_log        FNAME
                         load chat log from a file at FNAME (default: empty/no)
-  --state           FNAME
-                        save/load model state binary at FNAME (current: ./model_state.bin)
-                        context is saved to FNAME.ctx (current: ./model_state.bin.ctx)
+  --state           NAME
+                        save/load model state binary at saves/NAME.bin (current: model_state)
+                        context is saved to saves/NAME.ctx (current: model_state)
   -m FNAME, --model FNAME
                         model path (current: ./models/ggml-vicuna-13b-1.1-q4_2.bin)
 ```
