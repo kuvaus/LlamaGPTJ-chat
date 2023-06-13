@@ -170,6 +170,8 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "  --repeat_penalty   N  repeat_penalty (default: %.1f)\n", params.repeat_penalty);
     fprintf(stderr, "  --repeat_last_n    N  last n tokens to penalize  (default: %d)\n", params.repeat_last_n);
     fprintf(stderr, "  --context_erase    N  percent of context to erase  (default: %.1f)\n", params.context_erase);
+    fprintf(stderr, "  --b_token             optional beginning wrap token for response (default: empty)\n");
+    fprintf(stderr, "  --e_token             optional end wrap token for response (default: empty)\n");
     fprintf(stderr, "  -j,   --load_json FNAME\n");
     fprintf(stderr, "                        load options instead from json at FNAME (default: empty/no)\n");
     fprintf(stderr, "  --load_template   FNAME\n");
@@ -231,6 +233,10 @@ bool parse_params(int argc, char** argv, chatParams& params) {
             params.repeat_last_n = static_cast<int>(std::stoi(argv[++i]));
         } else if (arg == "--context_erase") {
             params.context_erase = static_cast<float>(std::stof(argv[++i]));
+        } else if (arg == "--b_token") {
+            params.b_token = argv[++i];
+        } else if (arg == "--e_token") {
+            params.e_token = argv[++i];
         } else if (arg == "--load_template") {
             params.load_template = argv[++i];
         } else if (arg == "--save_log") {

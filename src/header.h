@@ -84,6 +84,8 @@ struct chatParams {
         bool no_interactive = false;
         bool use_animation = true;
         bool run_once = false;
+        std::string b_token = "";           //beginning wrap token
+        std::string e_token = "";           //ending wrap token
         std::string load_template = "";     //template file location
         std::string load_json = "";         //json file location
         std::string save_log = "";          //saved chat log file location

@@ -75,7 +75,7 @@ void save_state_to_binary(llmodel_model& model, uint8_t *dest, std::string filen
   outfile.close();
 }
 
-void load_state_from_binary(llmodel_model& model, const std::string& filename) {
+void load_state_from_binary(llmodel_model& model, const std::string& filename,  llmodel_prompt_context & prompt_context) {
   // create an input file stream
   std::ifstream infile;
   // open the file in binary mode
@@ -100,7 +100,8 @@ void load_state_from_binary(llmodel_model& model, const std::string& filename) {
   infile.close();
 
   // restore the internal state of the model using the buffer data
-  llmodel_restore_state_data(model, buffer);
+  llmodel_restore_state_data(model, buffer);  
+  //prompt_context  = *static_cast<const llmodel_prompt_context*>(reinterpret_cast<void*>(buffer)); 
   delete[] buffer;
   return;
 }
@@ -148,7 +149,7 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
         prompt_context.n_past = params.n_past;
         prompt_context.n_ctx = params.n_ctx;
         
-    	load_state_from_binary(model, params.state);
+    	load_state_from_binary(model, params.state, prompt_context);
     	uint64_t model_size = llmodel_get_state_size(model);
     	
     	//get new input using recursion
@@ -333,6 +334,7 @@ int main(int argc, char* argv[]) {
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
             std::cerr << "\r" << " " << std::flush;
             std::cerr << "\r" << std::flush;
+            if (answer != "") {std::cout << answer;}
         }
             
 			std::cout << responsechars << std::flush;
@@ -363,16 +365,20 @@ int main(int argc, char* argv[]) {
         //Interactive mode. We have a prompt.
         if (params.prompt != "") {
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
+            if (params.b_token != ""){answer = answer + params.b_token; if(!params.use_animation) {std::cout << params.b_token;} }
             llmodel_prompt(model, (params.prompt + " " + input + default_footer).c_str(),
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
+            if (params.e_token != ""){std::cout << params.e_token; answer = answer + params.e_token; }
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
             if (params.save_log != ""){ save_chat_log(params.save_log, (params.prompt + " " + input + default_footer).c_str(), answer.c_str()); }
 
         //Interactive mode. Else get prompt from input.
         } else {
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
+            if (params.b_token != ""){answer = answer + params.b_token; if(!params.use_animation) {std::cout << params.b_token;} }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(),
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
+            if (params.e_token != ""){std::cout << params.e_token; answer = answer + params.e_token; }
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
             if (params.save_log != ""){ save_chat_log(params.save_log, (default_prefix + default_header + input + default_footer).c_str(), answer.c_str()); }
         }
@@ -382,8 +388,10 @@ int main(int argc, char* argv[]) {
             answer = ""; //New prompt. We stored previous answer in memory so clear it.
             input = get_input(con_st, input, params, prompt_context, model);
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
+            if (params.b_token != ""){answer = answer + params.b_token; if(!params.use_animation) {std::cout << params.b_token;} }
             llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(), 
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
+            if (params.e_token != ""){std::cout << params.e_token; answer = answer + params.e_token; }
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
             if (params.save_log != ""){ save_chat_log(params.save_log, (default_prefix + default_header + input + default_footer).c_str(), answer.c_str()); }
 
@@ -392,8 +400,10 @@ int main(int argc, char* argv[]) {
     //No-interactive mode. Get the answer once from prompt and print it.
     } else {
         if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
+        if (params.b_token != ""){answer = answer + params.b_token; if(!params.use_animation) {std::cout << params.b_token;} }
         llmodel_prompt(model, (params.prompt + default_footer).c_str(), 
         prompt_callback, response_callback, recalculate_callback, &prompt_context);
+        if (params.e_token != ""){std::cout << params.e_token; answer = answer + params.e_token; }
         if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
         if (params.save_log != ""){ save_chat_log(params.save_log, (params.prompt + default_footer).c_str(), answer.c_str()); }
         std::cout << std::endl;
