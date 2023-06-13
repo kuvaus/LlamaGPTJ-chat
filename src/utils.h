@@ -258,9 +258,9 @@ bool parse_params(int argc, char** argv, chatParams& params) {
         }
     }
     //get path to program
-	std::filesystem::path path = std::filesystem::absolute(dirname(argv[0]));
-	path.append("/");
-	params.path = path.string();
+	params.path = dirname(argv[0]);
+	params.path.append("/");
+
 	
     return true;
 }

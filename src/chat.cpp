@@ -268,12 +268,6 @@ int main(int argc, char* argv[]) {
     //get all parameters from cli arguments or json
     parse_params(argc, argv, params);
     
-    std::cout << params.path << std::endl;
-    
-    std::cout << params.state << std::endl;
-    
-    std::cout << params.state << std::endl;
-    
     //Create a prompt_context and copy all params from chatParams to prompt_context
     llmodel_prompt_context prompt_context = {
      .logits = params.logits,
