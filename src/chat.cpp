@@ -39,7 +39,7 @@ void display_loading() {
                 if (stop_display){ break; }
         }
         
-         std::cout << "\r" << "               " << "\r" << std::flush;
+        std::cout << "\r" << "               " << "\r" << std::flush;
     }
     std::cout << "\r" << " " << std::flush;
 

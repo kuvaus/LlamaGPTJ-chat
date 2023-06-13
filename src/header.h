@@ -94,7 +94,7 @@ struct chatParams {
         std::string load_json = "";         //json file location
         std::string save_log = "";          //saved chat log file location
         std::string load_log = "";          //loaded chat log file location
-        std::string state = "model_state";//model state binary location
+        std::string state = "model_state";  //model state binary name
         //program binary path
         std::string path = "";
 };
