@@ -24,7 +24,7 @@
 
 //For Windows paths
 //Commented out to support really old xcode
-#ifdef _WIN32
+#ifndef __APPLE__
     #include <filesystem>
 #endif
 
