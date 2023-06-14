@@ -160,6 +160,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "Runs default in interactive and continuous mode.\n");
     fprintf(stderr, "Type '/reset' to reset the chat context.\n");
     fprintf(stderr, "Type '/save','/load' to save network state into a binary file.\n");
+    fprintf(stderr, "Type '/save NAME','/load NAME' to rename saves. Default: --state NAME.\n");
     fprintf(stderr, "Type '/help' to show this help dialog.\n");
     fprintf(stderr, "Type 'quit', 'exit' or, 'Ctrl+C' to quit.\n");
     fprintf(stderr, "\n");
