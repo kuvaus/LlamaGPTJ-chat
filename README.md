@@ -109,6 +109,7 @@ You can set specific initial prompt with the -p flag.
 Runs default in interactive and continuous mode.
 Type '/reset' to reset the chat context.
 Type '/save','/load' to save network state into a binary file.
+Type '/save NAME','/load NAME' to rename saves. Default: --state NAME.
 Type '/help' to show this help dialog.
 Type 'quit', 'exit' or, 'Ctrl+C' to quit.
 
