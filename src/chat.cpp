@@ -55,12 +55,12 @@ void display_loading() {
 //////////////////////////////////////////////////////////////////////////
 
 
-void save_state_to_binary(llmodel_model& model, uint8_t *dest, chatParams& params) {
+bool save_state_to_binary(llmodel_model& model, uint8_t *dest, chatParams& params) {
   std::filesystem::path directory_path(params.path+"./saves");
     if (!std::filesystem::is_directory(directory_path)) {
         if (!std::filesystem::create_directory(directory_path)) {
             std::cerr << "Error creating directory" << std::endl;
-            return;
+            return false;
         }
     }
   // create an output file stream
@@ -71,7 +71,7 @@ void save_state_to_binary(llmodel_model& model, uint8_t *dest, chatParams& param
   // check if the file stream is open
   if (!outfile.is_open()) {
     std::cerr << "Error opening file " << params.state+".bin" << std::endl;
-    return;
+    return false;
   }
 
   // write the model data to the file stream
@@ -80,9 +80,10 @@ void save_state_to_binary(llmodel_model& model, uint8_t *dest, chatParams& param
 
   // close the file stream
   outfile.close();
+  return true;
 }
 
-void load_state_from_binary(llmodel_model& model, chatParams& params) {
+bool load_state_from_binary(llmodel_model& model, chatParams& params) {
   // create an input file stream
   std::ifstream infile;
   // open the file in binary mode
@@ -91,7 +92,7 @@ void load_state_from_binary(llmodel_model& model, chatParams& params) {
   // check if the file stream is open
   if (!infile.is_open()) {
     std::cerr << "Error opening file " << params.state+".bin" << std::endl;
-    return;
+    return false;
   }
 
   // get the size of the file
@@ -110,15 +111,15 @@ void load_state_from_binary(llmodel_model& model, chatParams& params) {
   llmodel_restore_state_data(model, buffer);  
   //prompt_context  = *static_cast<const llmodel_prompt_context*>(reinterpret_cast<void*>(buffer)); 
   delete[] buffer;
-  return;
+  return true;
 }
 
-void save_ctx_to_binary(llmodel_prompt_context* prompt_context, chatParams& params) {
+bool save_ctx_to_binary(llmodel_prompt_context* prompt_context, chatParams& params) {
   std::filesystem::path directory_path(params.path+"./saves");
     if (!std::filesystem::is_directory(directory_path)) {
         if (!std::filesystem::create_directory(directory_path)) {
             std::cerr << "Error creating directory" << std::endl;
-            return;
+            return false;
         }
     }
 	std::string context_filename = params.path+"./saves/"+params.state+".ctx";
@@ -126,7 +127,7 @@ void save_ctx_to_binary(llmodel_prompt_context* prompt_context, chatParams& para
     FILE* file = fopen(context_filename.c_str(), "wb");
     if (!file) {
         std::cerr << "Error opening file: " << params.state+".ctx" << std::endl;
-        return;
+        return false;
     }
 
     // Write the struct to the file using fwrite
@@ -135,6 +136,7 @@ void save_ctx_to_binary(llmodel_prompt_context* prompt_context, chatParams& para
 
     // Close the file
     fclose(file);
+    return true;
 }
 
 llmodel_prompt_context load_ctx_from_binary(chatParams& params) {
@@ -162,6 +164,11 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
 
     std::cout << "\n> ";
     std::getline(std::cin, input);
+    
+    std::istringstream iss(input);
+    std::string input1, input2;
+    std::getline(iss, input1, ' ');
+    std::getline(iss, input2, ' ');
     set_console_color(con_st, DEFAULT);
     
     if (input == "/reset") {
@@ -178,20 +185,27 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
         std::cout << "Chat context reset.";
         return get_input(con_st, input, params, prompt_context, model);
     }
-    if (input == "/save"){
+    if (input == "/save" || input1 == "/save"){
+    	if (input2 != "" && (input2.find("..") == std::string::npos) ) { params.state = input2; }
+    	
+    	
+        bool success1 = false;
+        bool success2 = false;
+    	
     	uint64_t model_size = llmodel_get_state_size(model);
 		uint8_t *dest = new uint8_t[model_size];
-    	save_state_to_binary(model, dest, params);
+    	success1 = save_state_to_binary(model, dest, params);
     	delete[] dest;
-    	save_ctx_to_binary(&prompt_context, params);
+    	success2 = save_ctx_to_binary(&prompt_context, params);
     	
     	//get new input using recursion
         set_console_color(con_st, PROMPT);
-        std::cout << "Model data saved to: " << params.state << " size: " << floor(model_size/10000000)/100.0 << " Gb";
+        if (success1 && success2) { std::cout << "Model data saved to: " << "saves/"+params.state+".bin" << " size: " << floor(model_size/10000000)/100.0 << " Gb"; }
         return get_input(con_st, input, params, prompt_context, model);
     }
     
-    if (input == "/load"){
+    if (input == "/load" || input1 == "/load"){
+    	if (input2 != "" && (input2.find("..") == std::string::npos) ) { params.state = input2; }
     	//reset the logits, tokens and past conversation
         prompt_context.logits = params.logits;
         prompt_context.logits_size = params.logits_size;
@@ -200,13 +214,15 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
         prompt_context.n_past = params.n_past;
         prompt_context.n_ctx = params.n_ctx;
         
+        bool success = false;
+        
     	prompt_context = load_ctx_from_binary(params);
-    	load_state_from_binary(model, params);
+    	success = load_state_from_binary(model, params);
     	uint64_t model_size = llmodel_get_state_size(model);
     	
     	//get new input using recursion
         set_console_color(con_st, PROMPT);
-        std::cout << "Model data loaded from: " << params.state << " size: " << floor(model_size/10000000)/100.0 << " Gb";
+        if (success) { std::cout << "Model data loaded from: " << "saves/"+params.state+".bin" << " size: " << floor(model_size/10000000)/100.0 << " Gb"; }
         return get_input(con_st, input, params, prompt_context, model);
     }
     
@@ -345,25 +361,20 @@ int main(int argc, char* argv[]) {
     std::cout << "\n" << params.prompt.c_str() << std::endl;
     set_console_color(con_st, DEFAULT);
 
-    //default prompt template, should work with most instruction-type models
-    std::string default_prefix = "### Instruction:\n The prompt below is a question to answer, a task to complete, or a conversation to respond to; decide which and write an appropriate response.";
-    std::string default_header = "\n### Prompt: ";
-    std::string default_footer = "\n### Response: ";
-
     //load prompt template from file instead
     if (params.load_template != "") {
-        std::tie(default_prefix, default_header, default_footer) = read_prompt_template_file(params.load_template);
+        std::tie(params.default_prefix, params.default_header, params.default_footer) = read_prompt_template_file(params.load_template);
     }
     
     //load chat log from a file
     if (params.load_log != "") {
     	if (params.prompt == "") {
-        	params.prompt = default_prefix + read_chat_log(params.load_log) + default_header;
+        	params.prompt = params.default_prefix + read_chat_log(params.load_log) + params.default_header;
         } else {
-        	params.prompt = default_prefix + read_chat_log(params.load_log) + default_header + params.prompt;
+        	params.prompt = params.default_prefix + read_chat_log(params.load_log) + params.default_header + params.prompt;
         }
     } else {
-    	params.prompt = default_prefix + default_header + params.prompt;
+    	params.prompt = params.default_prefix + params.default_header + params.prompt;
     }
     
     //////////////////////////////////////////////////////////////////////////
@@ -418,21 +429,21 @@ int main(int argc, char* argv[]) {
         if (params.prompt != "") {
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
             if (params.b_token != ""){answer = answer + params.b_token; if(!params.use_animation) {std::cout << params.b_token;} }
-            llmodel_prompt(model, (params.prompt + " " + input + default_footer).c_str(),
+            llmodel_prompt(model, (params.prompt + " " + input + params.default_footer).c_str(),
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.e_token != ""){std::cout << params.e_token; answer = answer + params.e_token; }
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
-            if (params.save_log != ""){ save_chat_log(params.save_log, (params.prompt + " " + input + default_footer).c_str(), answer.c_str()); }
+            if (params.save_log != ""){ save_chat_log(params.save_log, (params.prompt + " " + input + params.default_footer).c_str(), answer.c_str()); }
 
         //Interactive mode. Else get prompt from input.
         } else {
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
             if (params.b_token != ""){answer = answer + params.b_token; if(!params.use_animation) {std::cout << params.b_token;} }
-            llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(),
+            llmodel_prompt(model, (params.default_prefix + params.default_header + input + params.default_footer).c_str(),
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.e_token != ""){std::cout << params.e_token; answer = answer + params.e_token; }
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
-            if (params.save_log != ""){ save_chat_log(params.save_log, (default_prefix + default_header + input + default_footer).c_str(), answer.c_str()); }
+            if (params.save_log != ""){ save_chat_log(params.save_log, (params.default_prefix + params.default_header + input + params.default_footer).c_str(), answer.c_str()); }
         }
         //Interactive and continuous mode. Get prompt from input.
 
@@ -441,11 +452,11 @@ int main(int argc, char* argv[]) {
             input = get_input(con_st, input, params, prompt_context, model);
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
             if (params.b_token != ""){answer = answer + params.b_token; if(!params.use_animation) {std::cout << params.b_token;} }
-            llmodel_prompt(model, (default_prefix + default_header + input + default_footer).c_str(), 
+            llmodel_prompt(model, (params.default_prefix + params.default_header + input + params.default_footer).c_str(), 
             prompt_callback, response_callback, recalculate_callback, &prompt_context);
             if (params.e_token != ""){std::cout << params.e_token; answer = answer + params.e_token; }
             if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
-            if (params.save_log != ""){ save_chat_log(params.save_log, (default_prefix + default_header + input + default_footer).c_str(), answer.c_str()); }
+            if (params.save_log != ""){ save_chat_log(params.save_log, (params.default_prefix + params.default_header + input + params.default_footer).c_str(), answer.c_str()); }
 
         }
 
@@ -453,11 +464,11 @@ int main(int argc, char* argv[]) {
     } else {
         if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }
         if (params.b_token != ""){answer = answer + params.b_token; if(!params.use_animation) {std::cout << params.b_token;} }
-        llmodel_prompt(model, (params.prompt + default_footer).c_str(), 
+        llmodel_prompt(model, (params.prompt + params.default_footer).c_str(), 
         prompt_callback, response_callback, recalculate_callback, &prompt_context);
         if (params.e_token != ""){std::cout << params.e_token; answer = answer + params.e_token; }
         if (params.use_animation){ stop_display = true; future.wait(); stop_display = false; }
-        if (params.save_log != ""){ save_chat_log(params.save_log, (params.prompt + default_footer).c_str(), answer.c_str()); }
+        if (params.save_log != ""){ save_chat_log(params.save_log, (params.prompt + params.default_footer).c_str(), answer.c_str()); }
         std::cout << std::endl;
     }
 

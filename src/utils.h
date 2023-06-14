@@ -31,15 +31,16 @@ void check_avx_support_at_startup() {
 ////////////            READ PROMPT TEMPLATE FILE             ////////////
 //////////////////////////////////////////////////////////////////////////
 
-//This is a bit messy function but it should parse the template file into header, prompt, and footer.
+//This is a bit messy function but it should parse the template file into prefix, header, and footer.
+//Chat will then prompt the model with (prefix + header + input/prompt +  footer)
 std::tuple<std::string, std::string, std::string> read_prompt_template_file(const std::string& file_path) {
-    std::string prompt, header, footer;
+    std::string prefix, header, footer;
     std::ifstream file(file_path);
 
     std::vector<std::string> lines;
     std::string line;
 
-    //store all lines of prompt template into a vector
+    //store all lines of header template into a vector
     if (file.is_open()) {
         while (std::getline(file, line)) {
             lines.push_back(line);
@@ -58,21 +59,26 @@ std::tuple<std::string, std::string, std::string> read_prompt_template_file(cons
             input_index = i;
         }
     }
-    //If there is only 1 line above %1, that will be ### prompt.
-    if (input_index == 1) {
-        prompt = lines[0];
-        header = " ";
+    //Special case of having only %1 in template file.
+    if (input_index == 0) {
+        header = "";
+        prefix = "";
+        footer = "";
+    //If there is only 1 line above %1, that will be ### header.
+    } else if (input_index == 1) {
+        header = lines[0];
+        prefix = " ";
     } else {
         
-        //Put lines above the prompt-line into header.
-        header = lines[0];
+        //Put lines above the header-line into prefix.
+        prefix = lines[0];
         for (size_t i = 1; i < input_index-1; ++i) {
-            header = header + "\n" + lines[i];
+            prefix = prefix + "\n" + lines[i];
         }
-        header = header  + " ";
+        prefix = prefix  + " ";
 
-        //store prompt-line (line above input-line)
-        prompt = "\n" + lines[input_index-1] + " ";
+        //store header-line (line above input-line)
+        header = "\n" + lines[input_index-1] + " ";
 
         //Put lines below the input-line into footer.
         footer = "\n";
@@ -81,7 +87,7 @@ std::tuple<std::string, std::string, std::string> read_prompt_template_file(cons
         }
     }
 
-    return std::make_tuple(header, prompt, footer);
+    return std::make_tuple(prefix, header, footer);
 }
 
 

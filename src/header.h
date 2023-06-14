@@ -81,9 +81,9 @@ struct chatParams {
         std::string model = "./models/ggml-vicuna-13b-1.1-q4_2.bin";
         std::string prompt = "";
         //template prefix, header, and footer
-        std::string default_prefix = "";
-        std::string default_header = "";
-        std::string default_footer = "";
+        std::string default_prefix = "### Instruction:\n The prompt below is a question to answer, a task to complete, or a conversation to respond to; decide which and write an appropriate response.";
+        std::string default_header = "\n### Prompt: ";
+        std::string default_footer = "\n### Response: ";
         //You can toggle chat interactivity with these parameters
         bool no_interactive = false;
         bool use_animation = true;
