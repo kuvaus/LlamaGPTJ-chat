@@ -79,6 +79,8 @@ void get_params_from_json(chatParams& params) {
         params.run_once = stob(removeQuotes(parsed["run-once"]));        
     if (parsed.find("no-animation") != parsed.end())
         params.use_animation = !stob(removeQuotes(parsed["no-animation"]));
+    if (parsed.find("no-saves") != parsed.end())
+        params.no_saves = stob(removeQuotes(parsed["no-saves"]));
 
     if (parsed.find("repeat_penalty") != parsed.end())
         params.repeat_penalty = std::stof(parsed["repeat_penalty"]);

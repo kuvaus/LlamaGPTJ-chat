@@ -168,6 +168,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "  --run-once            disable continuous mode\n");
     fprintf(stderr, "  --no-interactive      disable interactive mode altogether (uses given prompt only)\n");
     fprintf(stderr, "  --no-animation        disable chat animation\n");
+    fprintf(stderr, "  --no-saves            disable '/save','/load' functionality\n");
     fprintf(stderr, "  -s SEED, --seed SEED  RNG seed (default: -1)\n");
     fprintf(stderr, "  -t N, --threads    N  number of threads to use during computation (default: %d)\n", params.n_threads);
     fprintf(stderr, "  -p PROMPT, --prompt PROMPT\n");
@@ -220,6 +221,8 @@ bool parse_params(int argc, char** argv, chatParams& params) {
             params.no_interactive = true;
         } else if (arg == "--no-animation") {
             params.use_animation = false;
+        } else if (arg == "--no-saves") {
+            params.no_saves = true;
         } else if (arg == "-s" || arg == "--seed") {
             params.seed = static_cast<int32_t>(std::stoi(argv[++i]));
         } else if (arg == "-t" || arg == "--threads") {

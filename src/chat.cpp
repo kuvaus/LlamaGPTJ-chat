@@ -185,7 +185,7 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
         std::cout << "Chat context reset.";
         return get_input(con_st, input, params, prompt_context, model);
     }
-    if (input == "/save" || input1 == "/save"){
+    if ((input == "/save" || input1 == "/save") && (params.no_saves == false)) {
     	if (input2 != "" && (input2.find("..") == std::string::npos) ) { params.state = input2; }
     	
     	
@@ -204,7 +204,7 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
         return get_input(con_st, input, params, prompt_context, model);
     }
     
-    if (input == "/load" || input1 == "/load"){
+    if ((input == "/load" || input1 == "/load") && (params.no_saves == false)) {
     	if (input2 != "" && (input2.find("..") == std::string::npos) ) { params.state = input2; }
     	//reset the logits, tokens and past conversation
         prompt_context.logits = params.logits;
