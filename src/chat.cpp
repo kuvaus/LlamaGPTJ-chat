@@ -114,7 +114,7 @@ bool load_state_from_binary(llmodel_model& model, chatParams& params) {
   return true;
 }
 
-bool save_ctx_to_binary(llmodel_prompt_context* prompt_context, chatParams& params) {
+bool save_ctx_to_binary(llmodel_prompt_context& prompt_context, chatParams& params) {
   std::filesystem::path directory_path(params.path+"./saves");
     if (!std::filesystem::is_directory(directory_path)) {
         if (!std::filesystem::create_directory(directory_path)) {
@@ -132,7 +132,7 @@ bool save_ctx_to_binary(llmodel_prompt_context* prompt_context, chatParams& para
 
     // Write the struct to the file using fwrite
     size_t size = sizeof(llmodel_prompt_context);
-    fwrite(prompt_context, sizeof(llmodel_prompt_context), 1, file);
+    fwrite(&prompt_context, sizeof(llmodel_prompt_context), 1, file);
 
     // Close the file
     fclose(file);
@@ -196,7 +196,7 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
 		uint8_t *dest = new uint8_t[model_size];
     	success1 = save_state_to_binary(model, dest, params);
     	delete[] dest;
-    	success2 = save_ctx_to_binary(&prompt_context, params);
+    	success2 = save_ctx_to_binary(prompt_context, params);
     	
     	//get new input using recursion
         set_console_color(con_st, PROMPT);
