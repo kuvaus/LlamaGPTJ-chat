@@ -117,6 +117,7 @@ options:
   --run-once            disable continuous mode
   --no-interactive      disable interactive mode altogether (uses given prompt only)
   --no-animation        disable chat animation
+  --no-saves            disable '/save','/load' functionality
   -s SEED, --seed SEED  RNG seed (default: -1)
   -t N, --threads    N  number of threads to use during computation (default: 4)
   -p PROMPT, --prompt PROMPT
