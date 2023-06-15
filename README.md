@@ -43,6 +43,7 @@ cmake --build . --parallel
 > If you have a new processor, you can turn AVX512 instructions ON in the build step with `-DAVX512=ON` flag.
 > 
 > On old macOS, set `-DBUILD_UNIVERSAL=OFF` to make the build x86 only instead of the universal Intel/ARM64 binary.
+> On really old macOS, set `-DOLD_MACOS=ON`. This disables `/save` and `/load` but compiles on old Xcode.
 > 
 > On Windows you can now use Visual Studio (MSVC) or MinGW. If you want MinGW build instead, set `-G "MinGW Makefiles"`.
 >
@@ -119,7 +120,7 @@ options:
   --no-interactive      disable interactive mode altogether (uses given prompt only)
   --no-animation        disable chat animation
   --no-saves            disable '/save','/load' functionality
-  -s SEED, --seed SEED  RNG seed (default: -1)
+  -s SEED, --seed SEED  RNG seed (default: -1). Used for --random-prompt
   -t N, --threads    N  number of threads to use during computation (default: 4)
   -p PROMPT, --prompt PROMPT
                         prompt to start generation with (default: empty)
