@@ -108,8 +108,7 @@ bool load_state_from_binary(llmodel_model& model, chatParams& params, std::strin
   infile.close();
 
   // restore the internal state of the model using the buffer data
-  llmodel_restore_state_data(model, buffer);  
-  //prompt_context  = *static_cast<const llmodel_prompt_context*>(reinterpret_cast<void*>(buffer)); 
+  llmodel_restore_state_data(model, buffer); 
   delete[] buffer;
   return true;
 }
@@ -211,6 +210,8 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
     	std::string filename = params.state;
     	if (input2 != "" && (input2.find("..") == std::string::npos) ) { filename = input2; }
     	//reset the logits, tokens and past conversation
+    	free(prompt_context.logits);
+    	free(prompt_context.tokens);
         prompt_context.logits = params.logits;
         prompt_context.logits_size = params.logits_size;
         prompt_context.tokens = params.tokens;
