@@ -163,7 +163,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "Runs default in interactive and continuous mode.\n");
     fprintf(stderr, "Type '/reset' to reset the chat context.\n");
     fprintf(stderr, "Type '/save','/load' to save network state into a binary file.\n");
-    fprintf(stderr, "Type '/save NAME','/load NAME' to rename saves. Default: --state NAME.\n");
+    fprintf(stderr, "Type '/save NAME','/load NAME' to rename saves. Default: --save_name NAME.\n");
     fprintf(stderr, "Type '/help' to show this help dialog.\n");
     fprintf(stderr, "Type 'quit', 'exit' or, 'Ctrl+C' to quit.\n");
     fprintf(stderr, "\n");
@@ -173,7 +173,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "  --no-interactive      disable interactive mode altogether (uses given prompt only)\n");
     fprintf(stderr, "  --no-animation        disable chat animation\n");
     fprintf(stderr, "  --no-saves            disable '/save','/load' functionality\n");
-    fprintf(stderr, "  -s SEED, --seed SEED  RNG seed (default: -1). Used for --random-prompt\n");
+    fprintf(stderr, "  -s SEED, --seed SEED  RNG seed for --random-prompt (default: -1)\n");
     fprintf(stderr, "  -t N, --threads    N  number of threads to use during computation (default: %d)\n", params.n_threads);
     fprintf(stderr, "  -p PROMPT, --prompt PROMPT\n");
     fprintf(stderr, "                        prompt to start generation with (default: empty)\n");
@@ -197,9 +197,11 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "                        save chat log to a file at FNAME (default: empty/no)\n");
     fprintf(stderr, "  --load_log        FNAME\n");
     fprintf(stderr, "                        load chat log from a file at FNAME (default: empty/no)\n");
-    fprintf(stderr, "  --state           NAME\n");
-    fprintf(stderr, "                        save/load model state binary at saves/NAME.bin (current: %s)\n", params.state.c_str());
-    fprintf(stderr, "                        context is saved to saves/NAME.ctx (current: %s)\n", params.state.c_str());
+    fprintf(stderr, "  --save_dir        DIR\n");
+    fprintf(stderr, "                        directory for saves (default: %s/saves)\n", pathname_directory(argv[0]).c_str());
+    fprintf(stderr, "  --save_name       NAME\n");
+    fprintf(stderr, "                        save/load model state binary at save_dir/NAME.bin (current: %s)\n", params.save_name.c_str());
+    fprintf(stderr, "                        context is saved to save_dir/NAME.ctx (current: %s)\n", params.save_name.c_str());
     fprintf(stderr, "  -m FNAME, --model FNAME\n");
     fprintf(stderr, "                        model path (current: %s)\n", params.model.c_str());
     fprintf(stderr, "\n");
@@ -263,8 +265,10 @@ bool parse_params(int argc, char** argv, chatParams& params) {
             params.save_log = argv[++i];
         } else if (arg == "--load_log") {
             params.load_log = argv[++i];
-        } else if (arg == "--state") {
-            params.state = argv[++i];
+        } else if (arg == "--save_dir") {
+            params.save_dir = argv[++i];    
+        } else if (arg == "--save_name") {
+            params.save_name = argv[++i];
         } else if (arg == "-m" || arg == "--model") {
             params.model = argv[++i];
         } else if (arg == "-h" || arg == "--help") {

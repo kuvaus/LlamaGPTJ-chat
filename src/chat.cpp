@@ -55,22 +55,40 @@ void display_loading() {
 //////////////////////////////////////////////////////////////////////////
 
 #ifndef OLD_MACOS
-bool save_state_to_binary(llmodel_model& model, uint8_t *dest, chatParams& params, std::string &filename) {
-  std::filesystem::path directory_path(params.path+"./saves");
+
+bool save_state_to_binary(llmodel_model& model, uint8_t *dest, chatParams& params, std::string &filename, uint64_t model_size) {
+	
+  if (params.save_dir == "") {
+	std::filesystem::path directory_path(params.path+"saves");
     if (!std::filesystem::is_directory(directory_path)) {
         if (!std::filesystem::create_directory(directory_path)) {
             std::cerr << "Error creating directory" << std::endl;
             return false;
         }
     }
+  	params.save_dir = params.path+"saves";
+  }
+  
+  //sanity check that we're not trying to overwrite binaries of wrong size
+  //empty binaries are allowed, so are previous saves of same model type
+  if (std::filesystem::exists(params.save_dir+"/"+filename+".bin")) {
+  	uint64_t file_size = std::filesystem::file_size(params.save_dir+"/"+filename+".bin");
+  	if ((file_size == model_size) || (file_size = 0)) {
+  	//continue
+  	} else {
+  		std::cerr << "You are trying to overwrite existing binary of different size! " << params.save_dir+"/"+filename+".bin" << std::endl;
+  		return 0;
+  	}
+  }
+  
   // create an output file stream
   std::ofstream outfile;
   // open the file in binary mode
-  outfile.open(params.path+"./saves/"+filename+".bin", std::ios::binary);
+  outfile.open(params.save_dir+"/"+filename+".bin", std::ios::binary);
 
   // check if the file stream is open
   if (!outfile.is_open()) {
-    std::cerr << "Error opening file " << "saves/"+filename+".bin" << std::endl;
+    std::cerr << "Error opening file " << params.save_dir+"/"+filename+".bin" << std::endl;
     return false;
   }
 
@@ -83,15 +101,32 @@ bool save_state_to_binary(llmodel_model& model, uint8_t *dest, chatParams& param
   return true;
 }
 
-bool load_state_from_binary(llmodel_model& model, chatParams& params, std::string &filename) {
+bool load_state_from_binary(llmodel_model& model, chatParams& params, std::string &filename, uint64_t model_size) {
+
+  if (params.save_dir == "") {
+  	params.save_dir = params.path+"saves";
+  }
+
+  //sanity check that we're not trying to load binaries of wrong size
+  //only binaries that are saves of same model type are allowed
+  if (std::filesystem::exists(params.save_dir+"/"+filename+".bin")) {
+  	uint64_t file_size = std::filesystem::file_size(params.save_dir+"/"+filename+".bin");
+  	if (file_size == model_size) {
+  	//continue
+  	} else {
+  		std::cerr << "You are trying to load a binary of wrong size! " << params.save_dir+"/"+filename+".bin" << std::endl;
+  		return 0;
+  	}
+  }  
+
   // create an input file stream
   std::ifstream infile;
   // open the file in binary mode
-  infile.open(params.path+"./saves/"+filename+".bin", std::ios::binary);
+  infile.open(params.save_dir+"/"+filename+".bin", std::ios::binary);
 
   // check if the file stream is open
   if (!infile.is_open()) {
-    std::cerr << "Error opening file " << "saves/"+filename+".bin" << std::endl;
+    std::cerr << "Error opening file " << params.save_dir+"/"+filename+".bin" << std::endl;
     return false;
   }
 
@@ -114,18 +149,22 @@ bool load_state_from_binary(llmodel_model& model, chatParams& params, std::strin
 }
 
 bool save_ctx_to_binary(llmodel_prompt_context& prompt_context, chatParams& params, std::string &filename) {
-  std::filesystem::path directory_path(params.path+"./saves");
+	
+	if (params.save_dir == "") {
+	std::filesystem::path directory_path(params.path+"saves");
     if (!std::filesystem::is_directory(directory_path)) {
         if (!std::filesystem::create_directory(directory_path)) {
             std::cerr << "Error creating directory" << std::endl;
             return false;
         }
     }
-	std::string context_filename = params.path+"./saves/"+filename+".ctx";
+	  params.save_dir = params.path+"saves";
+	}
+	
     // Open the binary file for writing
-    FILE* file = fopen(context_filename.c_str(), "wb");
+    FILE* file = fopen((params.save_dir+"/"+filename+".ctx").c_str(), "wb");
     if (!file) {
-        std::cerr << "Error opening file: " << "saves/"+filename+".ctx" << std::endl;
+        std::cerr << "Error opening file: " << params.save_dir+"/"+filename+".ctx" << std::endl;
         return false;
     }
 
@@ -139,11 +178,15 @@ bool save_ctx_to_binary(llmodel_prompt_context& prompt_context, chatParams& para
 }
 
 llmodel_prompt_context load_ctx_from_binary(chatParams& params, std::string &filename) {
-	std::string context_filename = params.path+"./saves/"+filename+".ctx";
+	
+ 	if (params.save_dir == "") {
+		params.save_dir = params.path+"saves";
+ 	}
+	
     // Open the binary file for reading
-    FILE* file = fopen(context_filename.c_str(), "rb");
+    FILE* file = fopen((params.save_dir+"/"+filename+".ctx").c_str(), "rb");
     if (!file) {
-        std::cerr << "Error opening file: " << "saves/"+filename+".ctx" << std::endl;
+        std::cerr << "Error opening file: " << params.save_dir+"/"+filename+".ctx" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -187,7 +230,7 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
     }
     #ifndef OLD_MACOS
     if ((input == "/save" || input1 == "/save") && (params.no_saves == false)) {
-    	std::string filename = params.state;
+    	std::string filename = params.save_name;
     	if (input2 != "" && (input2.find("..") == std::string::npos) ) { filename = input2; }
     	
     	
@@ -196,18 +239,18 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
     	
     	uint64_t model_size = llmodel_get_state_size(model);
 		uint8_t *dest = new uint8_t[model_size];
-    	success1 = save_state_to_binary(model, dest, params, filename);
+    	success1 = save_state_to_binary(model, dest, params, filename, model_size);
     	delete[] dest;
     	success2 = save_ctx_to_binary(prompt_context, params, filename);
     	
     	//get new input using recursion
         set_console_color(con_st, PROMPT);
-        if (success1 && success2) { std::cout << "Model data saved to: " << "saves/"+filename+".bin" << " size: " << floor(model_size/10000000)/100.0 << " Gb"; }
+        if (success1 && success2) { std::cout << "Model data saved to: " << params.save_dir+"/"+filename+".bin" << " size: " << floor(model_size/10000000)/100.0 << " Gb"; }
         return get_input(con_st, input, params, prompt_context, model);
     }
     
     if ((input == "/load" || input1 == "/load") && (params.no_saves == false)) {
-    	std::string filename = params.state;
+    	std::string filename = params.save_name;
     	if (input2 != "" && (input2.find("..") == std::string::npos) ) { filename = input2; }
     	//reset the logits, tokens and past conversation
     	free(prompt_context.logits);
@@ -221,13 +264,14 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
         
         bool success = false;
         
+        uint64_t model_size = llmodel_get_state_size(model);
     	prompt_context = load_ctx_from_binary(params, filename);
-    	success = load_state_from_binary(model, params, filename);
-    	uint64_t model_size = llmodel_get_state_size(model);
+    	success = load_state_from_binary(model, params, filename, model_size);
+    	model_size = llmodel_get_state_size(model);
     	
     	//get new input using recursion
         set_console_color(con_st, PROMPT);
-        if (success) { std::cout << "Model data loaded from: " << "saves/"+filename+".bin" << " size: " << floor(model_size/10000000)/100.0 << " Gb"; }
+        if (success) { std::cout << "Model data loaded from: " << params.save_dir+"/"+filename+".bin" << " size: " << floor(model_size/10000000)/100.0 << " Gb"; }
         return get_input(con_st, input, params, prompt_context, model);
     }
     #endif

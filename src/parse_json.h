@@ -98,8 +98,10 @@ void get_params_from_json(chatParams& params) {
         params.save_log = removeQuotes(parsed["save_log"]);
     if (parsed.find("load_log") != parsed.end())
         params.load_log = removeQuotes(parsed["load_log"]);
-    if (parsed.find("state") != parsed.end())
-        params.state = removeQuotes(parsed["state"]);}
+    if (parsed.find("save_dir") != parsed.end())
+        params.save_dir = removeQuotes(parsed["save_dir"]);
+    if (parsed.find("save_name") != parsed.end())
+        params.save_name = removeQuotes(parsed["save_name"]);}
 
 
 #endif
