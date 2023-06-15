@@ -24,6 +24,9 @@ void check_avx_support_at_startup() {
     else if (avx && avx2 && fma)      {std::cout << "Your computer supports AVX2" << std::endl;}
     else if (avx)                     {std::cout << "Your computer only supports AVX1" << std::endl;}
     else                    {std::cout << "Your computer does not support AVX1 or AVX2\nThe program will likely not run." << std::endl;} 
+    #ifdef OLD_MACOS
+    std::cout << "Compiled with OLD_MACOS flag. /save and /load features turned off." << std::endl;
+    #endif
 #endif
 }
 
@@ -170,7 +173,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "  --no-interactive      disable interactive mode altogether (uses given prompt only)\n");
     fprintf(stderr, "  --no-animation        disable chat animation\n");
     fprintf(stderr, "  --no-saves            disable '/save','/load' functionality\n");
-    fprintf(stderr, "  -s SEED, --seed SEED  RNG seed (default: -1)\n");
+    fprintf(stderr, "  -s SEED, --seed SEED  RNG seed (default: -1). Used for --random-prompt.\n");
     fprintf(stderr, "  -t N, --threads    N  number of threads to use during computation (default: %d)\n", params.n_threads);
     fprintf(stderr, "  -p PROMPT, --prompt PROMPT\n");
     fprintf(stderr, "                        prompt to start generation with (default: empty)\n");

@@ -21,9 +21,9 @@
 #include <cstring>
 #include <functional>
 
-//For Windows paths
+//For paths
 //Commented out to support really old xcode
-#ifndef __APPLE__
+#ifndef OLD_MACOS
     #include <filesystem>
 #endif
 

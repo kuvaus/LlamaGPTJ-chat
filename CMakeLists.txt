@@ -1,13 +1,17 @@
 cmake_minimum_required (VERSION 3.2)
 
 if(APPLE)
+  option(OLD_MACOS       "Using old macos"                   OFF) 
   option(BUILD_UNIVERSAL "Build a Universal binary on macOS" ON)
-  if(BUILD_UNIVERSAL)
+  if(BUILD_UNIVERSAL AND NOT OLD_MACOS)
     # Build a Universal binary on macOS
     set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
   else()
     # Build for the host architecture on macOS
     set(CMAKE_OSX_ARCHITECTURES "${CMAKE_HOST_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE)
+  endif()
+  if (OLD_MACOS)
+    add_definitions(-DOLD_MACOS)
   endif()
 endif()
 
@@ -15,7 +19,7 @@ project(LlamaGPTJ-chat)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)
-set(VERSION_PATCH 6)
+set(VERSION_PATCH 7)
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS "on")
