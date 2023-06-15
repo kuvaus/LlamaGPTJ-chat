@@ -110,7 +110,7 @@ You can set specific initial prompt with the -p flag.
 Runs default in interactive and continuous mode.
 Type '/reset' to reset the chat context.
 Type '/save','/load' to save network state into a binary file.
-Type '/save NAME','/load NAME' to rename saves. Default: --state NAME.
+Type '/save NAME','/load NAME' to rename saves. Default: --save_name NAME.
 Type '/help' to show this help dialog.
 Type 'quit', 'exit' or, 'Ctrl+C' to quit.
 
@@ -120,7 +120,7 @@ options:
   --no-interactive      disable interactive mode altogether (uses given prompt only)
   --no-animation        disable chat animation
   --no-saves            disable '/save','/load' functionality
-  -s SEED, --seed SEED  RNG seed (default: -1). Used for --random-prompt
+  -s SEED, --seed SEED  RNG seed for --random-prompt (default: -1)
   -t N, --threads    N  number of threads to use during computation (default: 4)
   -p PROMPT, --prompt PROMPT
                         prompt to start generation with (default: empty)
@@ -144,9 +144,11 @@ options:
                         save chat log to a file at FNAME (default: empty/no)
   --load_log        FNAME
                         load chat log from a file at FNAME (default: empty/no)
-  --state           NAME
-                        save/load model state binary at saves/NAME.bin (current: model_state)
-                        context is saved to saves/NAME.ctx (current: model_state)
+  --save_dir        DIR
+                        directory for saves (default: ./saves)
+  --save_name       NAME
+                        save/load model state binary at save_dir/NAME.bin (current: model_state)
+                        context is saved to save_dir/NAME.ctx (current: model_state)
   -m FNAME, --model FNAME
                         model path (current: ./models/ggml-vicuna-13b-1.1-q4_2.bin)
 ```
