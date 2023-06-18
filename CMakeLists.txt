@@ -19,7 +19,7 @@ project(LlamaGPTJ-chat)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)
-set(VERSION_PATCH 8)
+set(VERSION_PATCH 9)
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS "on")
@@ -93,11 +93,6 @@ set(CMAKE_CXX_STANDARD 20)
 find_package(Threads REQUIRED)
 
 # main
-
-if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
-endif ()
 
 # Include static libs for compatibility:
 if(APPLE)
