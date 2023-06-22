@@ -166,17 +166,19 @@ bool save_ctx_to_binary(llmodel_prompt_context& prompt_context, chatParams& para
     }
 	  params.save_dir = params.path+"saves";
 	}
+
+  std::filesystem::path filePath = std::filesystem::path(params.save_dir) / (filename + ".ctx");
+  std::string fullPath = filePath.string();
 	
     // Open the binary file for writing
-    FILE* file = fopen((params.save_dir+"/"+filename+".ctx").c_str(), "wb");
+  FILE* file = fopen(fullPath.c_str(), "wb");
     if (!file) {
-        std::cerr << "Error opening file: " << params.save_dir+"/"+filename+".ctx" << std::endl;
+        std::cerr << "Error opening file: " << fullPath << std::endl;
         return false;
     }
 
     // Write the struct to the file using fwrite
-    size_t size = sizeof(llmodel_prompt_context);
-    fwrite(&prompt_context, sizeof(llmodel_prompt_context), 1, file);
+    fwrite(&prompt_context, sizeof(prompt_context), 1, file);
 
     // Close the file
     fclose(file);
@@ -188,18 +190,20 @@ llmodel_prompt_context load_ctx_from_binary(chatParams& params, std::string &fil
  	if (params.save_dir == "") {
 		params.save_dir = params.path+"saves";
  	}
-	
+	  // Construct the file path with home directory expansion
+    std::filesystem::path filePath = std::filesystem::path(params.save_dir) / (filename + ".ctx");
+    std::string fullPath = filePath.string();
+
     // Open the binary file for reading
-    FILE* file = fopen((params.save_dir+"/"+filename+".ctx").c_str(), "rb");
-    if (!file) {
-        std::cerr << "Error opening file: " << params.save_dir+"/"+filename+".ctx" << std::endl;
+    FILE* file = fopen(fullPath.c_str(), "rb");
+        if (!file) {
+        std::cerr << "Error opening file: " << fullPath << std::endl;
         exit(EXIT_FAILURE);
     }
 
     // Read the struct from the file using fread
     llmodel_prompt_context prompt_context;
-    size_t size = sizeof(llmodel_prompt_context);
-    fread(&prompt_context, sizeof(llmodel_prompt_context), 1, file);
+    fread(&prompt_context, sizeof(prompt_context), 1, file);
 
     // Close the file
     fclose(file);
