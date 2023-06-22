@@ -144,6 +144,12 @@ bool load_state_from_binary(llmodel_model& model, chatParams& params, std::strin
 
   // allocate a buffer to hold the file data
   uint8_t* buffer = new uint8_t[file_size];
+  try {
+    buffer = new uint8_t[file_size];
+  } catch (std::bad_alloc& ba) {
+    std::cerr << "Failed to allocate buffer: " << ba.what() << std::endl;
+    return false;
+  }
 
   // read the file data into the buffer
   infile.read(reinterpret_cast<char*>(buffer), file_size);
