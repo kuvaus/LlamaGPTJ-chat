@@ -9,13 +9,6 @@
 
 std::atomic<bool> stop_display{false}; 
 
-const int PROMPT_CONTEXT_VERSION = 1;
-
-struct llmodel_prompt_context_with_version {
-  int version;
-  llmodel_prompt_context prompt_context;
-};
-
 void display_frames() {
     const char* frames[] = {".", ":", "'", ":"};
     int frame_index = 0;
@@ -174,11 +167,6 @@ bool save_ctx_to_binary(llmodel_prompt_context& prompt_context, chatParams& para
 	  params.save_dir = params.path+"saves";
 	}
 	
-  // Add version field to the struct 
-   llmodel_prompt_context_with_version prompt_context_with_version;
-    prompt_context_with_version.version = PROMPT_CONTEXT_VERSION;
-    prompt_context_with_version.prompt_context = prompt_context;
-
     // Open the binary file for writing
     FILE* file = fopen((params.save_dir+"/"+filename+".ctx").c_str(), "wb");
     if (!file) {
@@ -187,7 +175,8 @@ bool save_ctx_to_binary(llmodel_prompt_context& prompt_context, chatParams& para
     }
 
     // Write the struct to the file using fwrite
-    fwrite(&prompt_context_with_version, sizeof(llmodel_prompt_context_with_version), 1, file);
+    size_t size = sizeof(llmodel_prompt_context);
+    fwrite(&prompt_context, sizeof(llmodel_prompt_context), 1, file);
 
     // Close the file
     fclose(file);
@@ -208,16 +197,9 @@ llmodel_prompt_context load_ctx_from_binary(chatParams& params, std::string &fil
     }
 
     // Read the struct from the file using fread
-    llmodel_prompt_context_with_version prompt_context_with_version;
-    fread(&prompt_context_with_version, sizeof(prompt_context_with_version), 1, file);
-
-    if (prompt_context_with_version.version != PROMPT_CONTEXT_VERSION) {
-        std::cerr << "Error: Invalid version of the context file" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    // Get the prompt context from the struct
-    llmodel_prompt_context prompt_context = prompt_context_with_version.prompt_context;
+    llmodel_prompt_context prompt_context;
+    size_t size = sizeof(llmodel_prompt_context);
+    fread(&prompt_context, sizeof(llmodel_prompt_context), 1, file);
 
     // Close the file
     fclose(file);
