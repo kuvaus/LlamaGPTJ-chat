@@ -362,10 +362,10 @@ int main(int argc, char* argv[]) {
     }; 
 
     //Subprocess signal handling
-    signal(SIGHUP, handle_sighup);
-    
     #ifdef _WIN32
         SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
+    #else
+        signal(SIGHUP, handle_sighup);
     #endif
  
     //////////////////////////////////////////////////////////////////////////
