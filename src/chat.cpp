@@ -360,6 +360,13 @@ int main(int argc, char* argv[]) {
      .repeat_last_n = params.repeat_last_n,
      .context_erase = params.context_erase,
     }; 
+
+    //Subprocess signal handling
+    signal(SIGHUP, handle_sighup);
+    
+    #ifdef _WIN32
+        SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
+    #endif
  
     //////////////////////////////////////////////////////////////////////////
     ////////////                 LOAD THE MODEL                   ////////////
@@ -481,7 +488,7 @@ int main(int argc, char* argv[]) {
     std::string input = "";
 
     //main chat loop.
-    if (!params.no_interactive) {
+    if (!params.no_interactive && !sighup_received) {
         input = get_input(con_st, input, params, prompt_context, model);
 
         //Interactive mode. We have a prompt.
@@ -506,7 +513,7 @@ int main(int argc, char* argv[]) {
         }
         //Interactive and continuous mode. Get prompt from input.
 
-        while (!params.run_once) {
+        while (!params.run_once && !sighup_received) {
             answer = ""; //New prompt. We stored previous answer in memory so clear it.
             input = get_input(con_st, input, params, prompt_context, model);
             if (params.use_animation){ stop_display = false; future = std::async(std::launch::async, display_frames); }

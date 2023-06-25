@@ -20,6 +20,7 @@
 #include <regex>
 #include <cstring>
 #include <functional>
+#include <csignal>
 
 //For paths
 //Commented out to support really old xcode
