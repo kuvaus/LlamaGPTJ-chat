@@ -40,9 +40,11 @@ void check_avx_support_at_startup() {
 volatile sig_atomic_t sighup_received = 0;
 
 void handle_sighup(int signal) {
+    #ifndef _WIN32
     if (signal == SIGHUP) {
         sighup_received = 1;
     }
+    #endif
 }
 
 #ifdef _WIN32
@@ -50,6 +52,7 @@ BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
     switch (ctrl_type) {
         case CTRL_C_EVENT:
         case CTRL_CLOSE_EVENT:
+            sighup_received = 1;
             return TRUE;
         default:
             return FALSE;
