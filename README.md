@@ -116,6 +116,7 @@ Type 'quit', 'exit' or, 'Ctrl+C' to quit.
 
 options:
   -h, --help            show this help message and exit
+  -v, --version         show version and license information
   --run-once            disable continuous mode
   --no-interactive      disable interactive mode altogether (uses given prompt only)
   --no-animation        disable chat animation
