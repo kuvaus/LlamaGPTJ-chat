@@ -289,8 +289,10 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
     if (input == "/help"){
     	set_console_color(con_st, DEFAULT);
     	std::cout << std::endl;
-    	char **emptyargv = (char**)calloc(1, sizeof(char*));
-    	print_usage(0, emptyargv, params);
+        char emptystring[] = "";
+        char* emptyargv[] = {emptystring};
+        int emptyargc = sizeof(emptyargv) / sizeof(char*);
+    	print_usage(emptyargc, emptyargv, params);
         return get_input(con_st, input, params, prompt_context, model);
     }
     
