@@ -293,7 +293,14 @@ std::string get_input(ConsoleState& con_st, std::string& input, chatParams &para
     	print_usage(0, emptyargv, params);
         return get_input(con_st, input, params, prompt_context, model);
     }
-        
+    
+    if (input == "/about"){
+    	set_console_color(con_st, DEFAULT);
+    	std::cout << std::endl;
+    	print_version();
+    	return get_input(con_st, input, params, prompt_context, model);
+    }
+       
     if (input == "exit" || input == "quit" || input == "/exit" || input == "/quit") {       
         llmodel_model_destroy(model);
         exit(0);

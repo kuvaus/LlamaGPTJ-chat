@@ -188,6 +188,20 @@ std::string random_prompt(int32_t seed) {
     return prompts[rng() % prompts.size()];
 }
 
+void print_version() {
+	//Version/about page
+	//Contains License information for distributions in binary form
+std::string mit_license = R"(MIT License
+
+Big thanks to contributors, testers, and commenters on Github.
+And to you, dear user!
+
+Happy chatting! :)
+)";
+std::cout << "\n\n" << APPNAME << " version " << VERSION << "\n\n" << "Made by kuvaus" << "\n\n" << mit_license << std::endl; 
+//std::cout << mit_license << std::endl; 
+}
+
 void print_usage(int argc, char** argv, const chatParams& params) {
     // Print usage information
     fprintf(stderr, "usage: %s [options]\n", argv[0]);
@@ -203,6 +217,7 @@ void print_usage(int argc, char** argv, const chatParams& params) {
     fprintf(stderr, "\n");
     fprintf(stderr, "options:\n");
     fprintf(stderr, "  -h, --help            show this help message and exit\n");
+    fprintf(stderr, "  -v, --version         show version and license information\n");
     fprintf(stderr, "  --run-once            disable continuous mode\n");
     fprintf(stderr, "  --no-interactive      disable interactive mode altogether (uses given prompt only)\n");
     fprintf(stderr, "  --no-animation        disable chat animation\n");
@@ -307,6 +322,9 @@ bool parse_params(int argc, char** argv, chatParams& params) {
             params.model = argv[++i];
         } else if (arg == "-h" || arg == "--help") {
             print_usage(argc, argv, params);
+            exit(0);
+        } else if (arg == "-v" || arg == "--version") {
+            print_version();
             exit(0);
         } else {
             fprintf(stderr, "error: unknown argument: %s\n", arg.c_str());
