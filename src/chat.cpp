@@ -156,16 +156,16 @@ bool load_state_from_binary(llmodel_model& model, chatParams& params, std::strin
 
 bool save_ctx_to_binary(llmodel_prompt_context& prompt_context, chatParams& params, std::string &filename) {
 	
-	if (params.save_dir == "") {
-	std::filesystem::path directory_path(params.path+"saves");
+  if (params.save_dir == "") {
+    std::filesystem::path directory_path(params.path+"saves");
     if (!std::filesystem::is_directory(directory_path)) {
         if (!std::filesystem::create_directory(directory_path)) {
             std::cerr << "Error creating directory" << std::endl;
             return false;
         }
     }
-	  params.save_dir = params.path+"saves";
-	}
+  params.save_dir = params.path+"saves";
+  }
 
   std::filesystem::path filePath = std::filesystem::path(params.save_dir) / (filename + ".ctx");
   std::string fullPath = filePath.string();
@@ -186,10 +186,10 @@ bool save_ctx_to_binary(llmodel_prompt_context& prompt_context, chatParams& para
 }
 
 llmodel_prompt_context load_ctx_from_binary(chatParams& params, std::string &filename) {
-	
- 	if (params.save_dir == "") {
-		params.save_dir = params.path+"saves";
- 	}
+
+    if (params.save_dir == "") {
+        params.save_dir = params.path+"saves";
+    }
 	  // Construct the file path with home directory expansion
     std::filesystem::path filePath = std::filesystem::path(params.save_dir) / (filename + ".ctx");
     std::string fullPath = filePath.string();
