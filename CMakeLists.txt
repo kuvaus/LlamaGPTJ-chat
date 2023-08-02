@@ -67,17 +67,17 @@ elseif(UNIX)
     endif()
 endif()
 
-if (GGML_SANITIZE_THREAD)
+if (GGML_SANITIZE_THREAD AND AVX)
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fsanitize=thread")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
 endif()
 
-if (GGML_SANITIZE_ADDRESS)
+if (GGML_SANITIZE_ADDRESS AND AVX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}     -fsanitize=address -fno-omit-frame-pointer")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 endif()
 
-if (GGML_SANITIZE_UNDEFINED)
+if (GGML_SANITIZE_UNDEFINED AND AVX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}     -fsanitize=undefined")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
 endif()
@@ -86,9 +86,21 @@ if (AVX512)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx512vl")
 endif()
 
+
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffast-math")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcpu=native")
+
+
+if (NOT AVX)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcpu=native")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast")
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcpu=native")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast")
+endif()
 
 # dependencies
 
