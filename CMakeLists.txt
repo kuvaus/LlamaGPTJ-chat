@@ -35,10 +35,11 @@ endif()
 
 
 # options
-option(AVX2                         "enable AVX2"                                           ON)
+option(AVX                          "enable AVX"                                            ON)
+option(AVX2                         "enable AVX2"                                           ${AVX})
 option(AVX512                       "enable AVX512"                                         OFF)
 
-option(LLAMA_AVX                    "llama: enable AVX"                                     ON)
+option(LLAMA_AVX                    "llama: enable AVX"                                     ${AVX})
 option(LLAMA_AVX2                   "llama: enable AVX2"                                    ${AVX2})
 option(LLAMA_AVX512                 "llama: enable AVX512"                                  ${AVX512})
 option(LLAMA_AVX512_VBMI            "llama: enable AVX512-VBMI"                             ${AVX512})
