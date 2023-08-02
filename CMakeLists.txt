@@ -45,6 +45,10 @@ option(LLAMA_AVX512                 "llama: enable AVX512"                      
 option(LLAMA_AVX512_VBMI            "llama: enable AVX512-VBMI"                             ${AVX512})
 option(LLAMA_AVX512_VNNI            "llama: enable AVX512-VNNI"                             ${AVX512})
 option(LLAMA_FMA                    "llama: enable FMA"                                     ${AVX2})
+# in MSVC F16C is implied with AVX2/AVX512
+if (NOT MSVC)
+    option(LLAMA_F16C               "llama: enable F16C"                                    ${AVX})
+endif()
 
 
 # sanitizers
